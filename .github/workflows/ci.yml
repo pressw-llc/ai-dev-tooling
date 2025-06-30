@@ -43,12 +43,17 @@ jobs:
       - uses: astral-sh/setup-uv@v1
         with:
           version: 'latest'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Lint Python
         working-directory: packages/python/pw-ai-foundation
         run: |
+          uv venv --python 3.11
+          source .venv/bin/activate
           uv pip install -e ".[dev]"
-          uv run ruff check .
-          uv run ruff format --check .
+          ruff check .
+          ruff format --check .
 
   python-typecheck:
     needs: detect-changes
@@ -59,11 +64,16 @@ jobs:
       - uses: astral-sh/setup-uv@v1
         with:
           version: 'latest'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Type Check Python
         working-directory: packages/python/pw-ai-foundation
         run: |
+          uv venv --python 3.11
+          source .venv/bin/activate
           uv pip install -e ".[dev]"
-          uv run mypy src
+          mypy src
 
   python-test:
     needs: detect-changes
@@ -83,8 +93,10 @@ jobs:
       - name: Test Python
         working-directory: packages/python/pw-ai-foundation
         run: |
+          uv venv --python ${{ matrix.python-version }}
+          source .venv/bin/activate
           uv pip install -e ".[dev]"
-          uv run pytest --cov=pw_ai_foundation --cov-report=xml
+          pytest --cov=pw_ai_foundation --cov-report=xml
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -143,14 +155,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20'
+          bun-version: latest
       - name: Build Docs
         working-directory: docs
         run: |
-          npm ci
-          npm run build
+          bun install
+          bun run build
 
   # Required status check
   ci-success:
@@ -162,6 +174,7 @@ jobs:
         typescript-lint,
         typescript-typecheck,
         typescript-test,
+        docs-build,
       ]
     if: always()
     runs-on: ubuntu-latest
