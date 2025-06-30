@@ -1,0 +1,77 @@
+{
+  "name": "@pressw/chat-nextjs",
+  "version": "0.0.1",
+  "description": "Next.js integrations for PressW Chat SDK",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.mjs",
+      "require": "./dist/server.cjs",
+      "types": "./dist/server.d.ts"
+    },
+    "./edge": {
+      "import": "./dist/edge.mjs",
+      "require": "./dist/edge.cjs",
+      "types": "./dist/edge.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun build src/index.ts --outfile dist/index.mjs --format esm && bun build src/index.ts --outfile dist/index.cjs --format cjs && bun build src/server.ts --outfile dist/server.mjs --format esm && bun build src/server.ts --outfile dist/server.cjs --format cjs && bun build src/edge.ts --outfile dist/edge.mjs --format esm && bun build src/edge.ts --outfile dist/edge.cjs --format cjs && tsc --emitDeclarationOnly",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "chat",
+    "nextjs",
+    "sdk",
+    "pressw",
+    "route-handlers",
+    "server-components"
+  ],
+  "author": "PressW Team <sdk@pressw.ai>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pressw/ai-dev-tooling.git",
+    "directory": "packages/typescript/chat-nextjs"
+  },
+  "dependencies": {
+    "@pressw/chat-core": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "peerDependencies": {
+    "next": "^14.0.0 || ^15.0.0",
+    "react": "^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": false
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^18.3.0",
+    "next": "^15.0.0",
+    "react": "^18.3.0",
+    "typescript": "^5.4.5",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

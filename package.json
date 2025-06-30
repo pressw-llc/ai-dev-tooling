@@ -1,0 +1,24 @@
+{
+  "name": "ai-dev-tooling-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/typescript/*"
+  ],
+  "scripts": {
+    "build": "bun run build:core && bun run build:ui",
+    "build:core": "cd packages/typescript/chat-core && bun run build",
+    "build:ui": "cd packages/typescript/chat-ui && bun run build",
+    "test": "bun test",
+    "lint": "bunx eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf packages/typescript/*/dist packages/typescript/*/node_modules"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  }
+}
