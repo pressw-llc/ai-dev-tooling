@@ -1,6 +1,7 @@
 """Test models module."""
 
 import pytest
+
 from pw_ai_foundation.models import BaseModel
 
 
