@@ -21,11 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: docs/bun.lock
+          bun-version: latest
       - name: Install dependencies
         working-directory: docs
         run: bun install --frozen-lockfile
