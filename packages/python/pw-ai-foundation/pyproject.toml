@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pw-ai-foundation"
+dynamic = ["version"]
+description = "PressW AI Foundation SDK for Python"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Liam DeVoe", email = "liam@pressw.ai" }]
+keywords = ["ai", "foundation", "sdk", "pressw"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = ["pydantic>=2.0", "httpx>=0.24.0", "typing-extensions>=4.5.0"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.5.0",
+    "mypy>=1.0",
+    "ipykernel>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/pressw/ai-dev-tooling"
+Documentation = "https://docs.pressw.ai"
+Repository = "https://github.com/pressw/ai-dev-tooling"
+Issues = "https://github.com/pressw/ai-dev-tooling/issues"
+
+[tool.hatch.version]
+path = "src/pw_ai_foundation/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/README.md"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pw_ai_foundation"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM", "RUF"]
+ignore = ["E501", "B008"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+filterwarnings = ["error"]

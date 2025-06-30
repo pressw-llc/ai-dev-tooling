@@ -1,0 +1,176 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'lts/**']
+  pull_request:
+    branches: [main, 'lts/**']
+
+permissions:
+  contents: read
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      typescript: ${{ steps.filter.outputs.typescript }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python:
+              - 'packages/python/**'
+              - '.github/workflows/ci.yml'
+            typescript:
+              - 'packages/typescript/**'
+              - 'package.json'
+              - 'bun.lockb'
+              - '.github/workflows/ci.yml'
+            docs:
+              - 'docs/**'
+              - '.github/workflows/ci.yml'
+
+  python-lint:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+        with:
+          version: 'latest'
+      - name: Lint Python
+        working-directory: packages/python/pw-ai-foundation
+        run: |
+          uv pip install -e ".[dev]"
+          uv run ruff check .
+          uv run ruff format --check .
+
+  python-typecheck:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+        with:
+          version: 'latest'
+      - name: Type Check Python
+        working-directory: packages/python/pw-ai-foundation
+        run: |
+          uv pip install -e ".[dev]"
+          uv run mypy src
+
+  python-test:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+        with:
+          version: 'latest'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Test Python
+        working-directory: packages/python/pw-ai-foundation
+        run: |
+          uv pip install -e ".[dev]"
+          uv run pytest --cov=pw_ai_foundation --cov-report=xml
+      - uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./packages/python/pw-ai-foundation/coverage.xml
+          flags: python
+
+  typescript-lint:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.typescript == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Lint TypeScript
+        run: bunx eslint . --max-warnings 0
+
+  typescript-typecheck:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.typescript == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Type Check TypeScript
+        run: bun run typecheck
+
+  typescript-test:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.typescript == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Test TypeScript
+        run: bun test --coverage
+      - uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: typescript
+
+  docs-build:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build Docs
+        working-directory: docs
+        run: |
+          npm ci
+          npm run build
+
+  # Required status check
+  ci-success:
+    needs:
+      [
+        python-lint,
+        python-typecheck,
+        python-test,
+        typescript-lint,
+        typescript-typecheck,
+        typescript-test,
+      ]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check CI Status
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+            echo "CI failed"
+            exit 1
+          else
+            echo "CI passed"
+          fi

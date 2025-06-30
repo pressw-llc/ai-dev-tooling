@@ -1,0 +1,14 @@
+{
+  "commitizen": {
+    "name": "cz_conventional_commits",
+    "version": "0.0.1",
+    "tag_format": "$version",
+    "version_files": [
+      "packages/python/pw-ai-foundation/src/pw_ai_foundation/__init__.py:__version__",
+      "packages/typescript/chat-core/package.json:version",
+      "packages/typescript/chat-ui/package.json:version"
+    ],
+    "update_changelog_on_bump": true,
+    "changelog_incremental": true
+  }
+}

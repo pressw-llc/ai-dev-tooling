@@ -1,0 +1,128 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*-v*'
+
+permissions:
+  contents: write
+  id-token: write
+  packages: write
+
+jobs:
+  parse-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      package: ${{ steps.parse.outputs.package }}
+      version: ${{ steps.parse.outputs.version }}
+    steps:
+      - name: Parse tag
+        id: parse
+        run: |
+          TAG="${{ github.ref_name }}"
+          # Extract package name and version from tag
+          # Format: package-name-vX.Y.Z
+          if [[ $TAG =~ ^(.*)-v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            PACKAGE="${BASH_REMATCH[1]}"
+            VERSION="${BASH_REMATCH[2]}"
+            echo "package=$PACKAGE" >> $GITHUB_OUTPUT
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "Invalid tag format: $TAG"
+            exit 1
+          fi
+
+  release-python:
+    needs: parse-tag
+    if: needs.parse-tag.outputs.package == 'pw-ai-foundation'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+        with:
+          version: 'latest'
+      - name: Build Python Package
+        working-directory: packages/python/pw-ai-foundation
+        run: |
+          uv build
+      - name: Publish to PyPI
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        working-directory: packages/python/pw-ai-foundation
+        run: |
+          uv publish
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./packages/python/pw-ai-foundation
+          format: spdx-json
+          output-file: pw-ai-foundation-sbom.json
+      - name: Attest provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: |
+            ./packages/python/pw-ai-foundation/dist/*.whl
+            ./packages/python/pw-ai-foundation/dist/*.tar.gz
+
+  release-typescript:
+    needs: parse-tag
+    if: startsWith(needs.parse-tag.outputs.package, 'pressw-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Determine package path
+        id: package-path
+        run: |
+          PACKAGE="${{ needs.parse-tag.outputs.package }}"
+          case $PACKAGE in
+            "pressw-chat-core")
+              echo "path=packages/typescript/chat-core" >> $GITHUB_OUTPUT
+              ;;
+            "pressw-chat-ui")
+              echo "path=packages/typescript/chat-ui" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "Unknown package: $PACKAGE"
+              exit 1
+              ;;
+          esac
+      - name: Build TypeScript Package
+        working-directory: ${{ steps.package-path.outputs.path }}
+        run: bun run build
+      - name: Configure npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      - name: Publish to npm
+        working-directory: ${{ steps.package-path.outputs.path }}
+        run: npm publish --access public
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: ${{ steps.package-path.outputs.path }}
+          format: spdx-json
+          output-file: ${{ needs.parse-tag.outputs.package }}-sbom.json
+      - name: Attest provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ${{ steps.package-path.outputs.path }}/dist/*
+
+  create-release:
+    needs: [parse-tag, release-python, release-typescript]
+    if: always() && !contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ needs.parse-tag.outputs.package }} v${{ needs.parse-tag.outputs.version }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true

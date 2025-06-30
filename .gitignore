@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+*.cover
+.hypothesis/
+
+# TypeScript/JavaScript
+node_modules/
+dist/
+*.tsbuildinfo
+.next/
+.nuxt/
+.bun/
+bun.lockb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+# Don't ignore .envrc files in packages (used for auto-activation)
+# .envrc
+
+# Testing
+coverage/
+*.log
+
+# Docs
+.docusaurus/
+build/
