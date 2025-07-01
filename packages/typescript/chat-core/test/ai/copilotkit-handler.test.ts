@@ -5,7 +5,7 @@ import {
   createRateLimitMiddleware,
   withRateLimit,
 } from '../../src/ai/handlers/copilotkit-handler';
-import type { CopilotKitHandlerConfig, UserContext } from '../../src/ai/types';
+import type { CopilotKitHandlerConfig } from '../../src/ai/types';
 import { AIError, AI_ERROR_CODES } from '../../src/ai/types';
 import { defineAgent, registerAgent, clearAgents } from '../../src/ai/agents';
 import { mockUserContext, mockAdapter, mockThread } from './test-utils';
@@ -14,9 +14,9 @@ import { mockUserContext, mockAdapter, mockThread } from './test-utils';
 class MockNextRequest {
   url: string;
   headers: Map<string, string>;
-  private body: any;
+  private body: unknown;
 
-  constructor(url: string, options?: { headers?: Record<string, string>; body?: any }) {
+  constructor(url: string, options?: { headers?: Record<string, string>; body?: unknown }) {
     this.url = url;
     this.headers = new Map(Object.entries(options?.headers || {}));
     this.body = options?.body || { messages: [], model: 'gpt-4' };
@@ -63,7 +63,7 @@ describe('createCopilotKitHandler', () => {
     expect(() => {
       createCopilotKitHandler({
         ...defaultConfig,
-        adapter: null as any,
+        adapter: null as unknown as typeof mockAdapter,
       });
     }).toThrow(AIError);
   });
@@ -72,14 +72,16 @@ describe('createCopilotKitHandler', () => {
     expect(() => {
       createCopilotKitHandler({
         ...defaultConfig,
-        getUserContext: null as any,
+        getUserContext: null as unknown as typeof mockGetUserContext,
       });
     }).toThrow(AIError);
   });
 
   test('should handle request successfully', async () => {
     const handler = createCopilotKitHandler(defaultConfig);
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
 
     const response = await handler(request);
 
@@ -98,7 +100,7 @@ describe('createCopilotKitHandler', () => {
     const handler = createCopilotKitHandler(defaultConfig);
     const request = new MockNextRequest(
       'http://localhost:3000/api/copilotkit?threadId=test-thread-123',
-    ) as any;
+    ) as unknown as Request;
 
     const response = await handler(request);
 
@@ -113,7 +115,7 @@ describe('createCopilotKitHandler', () => {
     const handler = createCopilotKitHandler(defaultConfig);
     const request = new MockNextRequest(
       'http://localhost:3000/api/copilotkit?threadId=non-existent-thread',
-    ) as any;
+    ) as unknown as Request;
 
     const response = await handler(request);
 
@@ -131,7 +133,9 @@ describe('createCopilotKitHandler', () => {
       getUserContext: failingGetUserContext,
     });
 
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
 
     const response = await handler(request);
 
@@ -165,7 +169,9 @@ describe('createCopilotKitHandler', () => {
       agents: [testAgent],
     });
 
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
     const response = await handler(request);
 
     expect(response.status).toBe(200);
@@ -177,7 +183,9 @@ describe('createCopilotKitHandler', () => {
       getUserContext: mockGetUserContext,
     });
 
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
     const response = await handler(request);
 
     expect(response.status).toBe(200);
@@ -198,7 +206,9 @@ describe('createRateLimitMiddleware', () => {
 
   test('should allow requests within limit', async () => {
     const middleware = createRateLimitMiddleware(60000, 10);
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
 
     const result = await middleware(request, mockGetUserContext);
 
@@ -207,7 +217,9 @@ describe('createRateLimitMiddleware', () => {
 
   test('should block requests exceeding limit', async () => {
     const middleware = createRateLimitMiddleware(1000, 2);
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
 
     // First two requests should pass
     await expect(middleware(request, mockGetUserContext)).resolves.toBeNull();
@@ -239,7 +251,9 @@ describe('withRateLimit', () => {
       getUserContext: mockGetUserContext,
     });
 
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
     const response = await rateLimitedHandler(request);
 
     expect(response).toBeInstanceOf(Response);
@@ -252,7 +266,9 @@ describe('withRateLimit', () => {
       getUserContext: mockGetUserContext,
     });
 
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
 
     // First request should succeed
     const response1 = await rateLimitedHandler(request);
@@ -306,7 +322,9 @@ describe('Handler Integration Tests', () => {
       getUserContext: async () => mockUserContext,
     });
 
-    const request = new MockNextRequest('http://localhost:3000/api/copilotkit') as any;
+    const request = new MockNextRequest(
+      'http://localhost:3000/api/copilotkit',
+    ) as unknown as Request;
     const response = await rateLimitedHandler(request);
 
     expect(response).toBeInstanceOf(Response);

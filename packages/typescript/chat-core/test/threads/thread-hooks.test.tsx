@@ -19,9 +19,7 @@ import {
   createMockThreadsResponse,
   createMockFetch,
   testScenarios,
-  errorScenarios,
   testThreads,
-  sleep,
 } from './test-utils';
 
 // Mock fetch globally

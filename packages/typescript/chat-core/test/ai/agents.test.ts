@@ -11,7 +11,7 @@ import {
   validateAgent,
 } from '../../src/ai/agents';
 import type { AIAgentDefinition, AIActionContext } from '../../src/ai/types';
-import { AIError, AI_ERROR_CODES } from '../../src/ai/types';
+import { AIError } from '../../src/ai/types';
 import { mockUserContext, mockAdapter, mockThread } from './test-utils';
 
 describe('defineAgent', () => {
@@ -72,7 +72,7 @@ describe('defineAgent', () => {
 
     expect(() => {
       defineAgent({
-        name: null as any,
+        name: null as unknown as string,
         description: 'Test agent',
         tools: [],
       });
@@ -91,7 +91,7 @@ describe('defineAgent', () => {
     expect(() => {
       defineAgent({
         name: 'test-agent',
-        description: null as any,
+        description: null as unknown as string,
         tools: [],
       });
     }).toThrow(AIError);
@@ -102,7 +102,7 @@ describe('defineAgent', () => {
       defineAgent({
         name: 'test-agent',
         description: 'Test agent',
-        tools: null as any,
+        tools: null as unknown as AIActionDefinition[],
       });
     }).toThrow(AIError);
 
@@ -110,7 +110,7 @@ describe('defineAgent', () => {
       defineAgent({
         name: 'test-agent',
         description: 'Test agent',
-        tools: 'invalid' as any,
+        tools: 'invalid' as unknown as AIActionDefinition[],
       });
     }).toThrow(AIError);
   });
@@ -239,8 +239,8 @@ describe('executeAgentTool', () => {
   };
 
   test('should execute agent tool successfully', async () => {
-    let calledWith: any = null;
-    const toolHandler = async (params: any) => {
+    let calledWith: unknown = null;
+    const toolHandler = async (params: unknown) => {
       calledWith = params;
       return 'Tool executed successfully';
     };
@@ -354,7 +354,7 @@ describe('validateAgent', () => {
     ];
 
     invalidAgents.forEach((agent) => {
-      expect(() => validateAgent(agent as any)).toThrow(AIError);
+      expect(() => validateAgent(agent as unknown as AIAgentDefinition)).toThrow(AIError);
     });
   });
 });

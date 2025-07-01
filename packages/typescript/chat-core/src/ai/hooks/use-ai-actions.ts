@@ -2,9 +2,6 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useCopilotAction } from '@copilotkit/react-core';
 import type { UseAIActionsOptions, AIActionDefinition, AIActionContext } from '../types';
 import { AIError, AI_ERROR_CODES } from '../types';
-import type { UserContext } from '../../types';
-import type { Thread } from '../../schema';
-import type { ChatCoreAdapter } from '../../adapters/types';
 import {
   useCreateThread,
   useUpdateThread,

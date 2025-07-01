@@ -9,8 +9,6 @@ import {
   createMockThreadsResponse,
   testScenarios,
   errorScenarios,
-  expectToHaveBeenCalledWithUserContext,
-  expectThreadToMatchInput,
 } from './test-utils';
 
 describe('ThreadUtilityClient', () => {

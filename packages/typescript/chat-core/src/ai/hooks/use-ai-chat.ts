@@ -286,7 +286,7 @@ export function useAIChat(options: UseAIChatOptions = {}): UseAIChatReturn {
         setError(null);
 
         // Ensure we have a thread
-        const activeThreadId = await ensureThread();
+        await ensureThread();
 
         // Send message through CopilotKit
         await copilotChat.append({

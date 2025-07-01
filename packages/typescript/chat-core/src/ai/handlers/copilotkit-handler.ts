@@ -1,15 +1,7 @@
 // CopilotKit backend handler - Chat completions API handler pattern
 import type { NextRequest } from 'next/server';
-import type {
-  CopilotKitHandlerConfig,
-  AIAgentDefinition,
-  AIActionContext,
-  AIChatConfig,
-  UserContext,
-} from '../types';
+import type { CopilotKitHandlerConfig, AIActionContext, AIChatConfig, UserContext } from '../types';
 import { AIError, AI_ERROR_CODES } from '../types';
-import type { ChatCoreAdapter } from '../../adapters/types';
-import { executeAgentTool } from '../agents';
 
 /**
  * Creates a Next.js API route handler for CopilotKit integration
@@ -77,9 +69,9 @@ export function createCopilotKitHandler(config: CopilotKitHandlerConfig) {
   return async function handler(request: NextRequest) {
     try {
       // Get user context from request
-      let userContext: UserContext;
+      let _userContext: UserContext;
       try {
-        userContext = await config.getUserContext(request);
+        _userContext = await config.getUserContext(request);
       } catch (error) {
         throw new AIError(
           `Failed to get user context: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -105,21 +97,13 @@ export function createCopilotKitHandler(config: CopilotKitHandlerConfig) {
         }
       }
 
-      // Create action context
-      const actionContext: AIActionContext = {
-        userContext,
-        adapter: config.adapter,
-        threadId,
-        thread,
-      };
-
       // Parse the request body to get the chat message
       const body = await request.json();
       const {
-        messages = [],
-        model = defaultConfig.model,
-        temperature = defaultConfig.temperature,
-        max_tokens = defaultConfig.maxTokens,
+        messages: _messages = [],
+        model: _model = defaultConfig.model,
+        temperature: _temperature = defaultConfig.temperature,
+        max_tokens: _max_tokens = defaultConfig.maxTokens,
       } = body;
 
       // Process agents and their tools

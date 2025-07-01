@@ -50,7 +50,7 @@ describe('useAIActions Types and Interfaces', () => {
     });
 
     it('should define AIActionDefinition correctly', () => {
-      const mockHandler = async (params: any, context: AIActionContext) => {
+      const mockHandler = async (_params: any, _context: AIActionContext) => {
         return 'Action executed';
       };
 

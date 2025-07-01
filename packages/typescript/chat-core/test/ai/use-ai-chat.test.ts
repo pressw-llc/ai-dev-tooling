@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, mock, spyOn } from 'bun:test';
-import { useAIChat } from '../../src/ai/hooks/use-ai-chat';
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
 import type { UseAIChatOptions, AIMessage, AIContextItem } from '../../src/ai/types';
+import { AIError, AI_ERROR_CODES } from '../../src/ai/types';
 
 // Mock data
-const mockThread = {
+const _mockThread = {
   id: 'thread-123',
   title: 'Test Thread',
   userId: 'user-123',
@@ -14,7 +14,7 @@ const mockThread = {
   updatedAt: new Date(),
 };
 
-const mockMessages: AIMessage[] = [
+const _mockMessages: AIMessage[] = [
   {
     id: 'msg-1',
     role: 'user' as const,
@@ -213,7 +213,7 @@ describe('useAIChat', () => {
 
   describe('error handling', () => {
     it('should create proper error types', () => {
-      const { AIError, AI_ERROR_CODES } = require('../../src/ai/types');
+      // Using imported AIError and AI_ERROR_CODES
 
       const error = new AIError('Test error message', AI_ERROR_CODES.COPILOTKIT_ERROR, {
         additional: 'context',
@@ -226,7 +226,7 @@ describe('useAIChat', () => {
     });
 
     it('should have all required error codes', () => {
-      const { AI_ERROR_CODES } = require('../../src/ai/types');
+      // Using imported AI_ERROR_CODES
 
       expect(AI_ERROR_CODES.RATE_LIMITED).toBe('RATE_LIMITED');
       expect(AI_ERROR_CODES.CONTEXT_TOO_LARGE).toBe('CONTEXT_TOO_LARGE');

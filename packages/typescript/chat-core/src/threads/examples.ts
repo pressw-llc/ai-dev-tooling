@@ -19,7 +19,7 @@ import type { ThreadRouteConfig, UserContext, DrizzleAdapterConfig } from './ind
  */
 export function setupDatabase() {
   // Initialize PostgreSQL connection
-  const connectionString = process.env.DATABASE_URL!;
+  // const connectionString = process.env.DATABASE_URL!;
   // const queryClient = postgres(connectionString);
   // const db = drizzle(queryClient);
   const db = {} as any; // Placeholder for example
@@ -344,7 +344,7 @@ async function getUserContextFromClerk(request: Request): Promise<UserContext> {
 `;
 
 // Mock function for example
-function verifyJWT(token: string): any {
+function verifyJWT(_token: string): any {
   // Your JWT verification logic
   return { userId: 'user-123', organizationId: 'org-456', tenantId: 'tenant-789' };
 }

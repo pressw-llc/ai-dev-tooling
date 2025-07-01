@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Thread, User } from './schema';
+import type { Thread } from './schema';
 
 export const MessageSchema = z.object({
   id: z.string(),

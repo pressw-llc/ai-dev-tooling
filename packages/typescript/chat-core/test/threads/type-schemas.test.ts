@@ -8,7 +8,7 @@ import {
   ApiErrorSchema,
   ApiResponseSchema,
 } from '../../src/types';
-import { createMockUserContext, createMockThread, createMockThreadsResponse } from './test-utils';
+import { createMockThread, createMockThreadsResponse } from './test-utils';
 
 describe('Type Validation Schemas', () => {
   describe('UserContextSchema', () => {

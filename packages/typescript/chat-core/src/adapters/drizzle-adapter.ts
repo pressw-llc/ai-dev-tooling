@@ -17,7 +17,6 @@ import {
 import { BaseAdapter } from './base-adapter';
 import type {
   AdapterConfig,
-  CreateAdapterParams,
   Where,
   CleanedWhere,
   SortBy,

@@ -452,7 +452,7 @@ describe('useAIContext utilities', () => {
           name: 'special-chars',
           description: 'Item with special characters: 你好, émojis 🎉, and "quotes"',
           data: {
-            text: 'Special: \n\t\r\b\f\\\/"\'',
+            text: 'Special: \n\t\r\b\f\\/"\'',
             unicode: '你好世界',
             emoji: '🎉🚀💡',
           },

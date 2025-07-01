@@ -1,5 +1,4 @@
 // Shared test utilities for AI features
-import { describe, test, expect, beforeEach, afterEach, mock } from 'bun:test';
 import type {
   AIActionDefinition,
   AIAgentDefinition,
@@ -24,7 +23,7 @@ export const mockAdapter: ChatCoreAdapter = {
   delete: async () => ({}),
   count: async () => 0,
   getThread: async () => mockThread,
-} as any;
+} as unknown as ChatCoreAdapter;
 
 // Mock thread for tests
 export const mockThread = {
@@ -82,7 +81,7 @@ export const mockContextItems: AIContextItem[] = [
 ];
 
 // React Testing Library setup helpers
-export const renderHookWithProviders = (hook: () => any) => {
+export const renderHookWithProviders = (hook: () => unknown) => {
   // This will be implemented once we have providers set up
   return { result: { current: hook() } };
 };

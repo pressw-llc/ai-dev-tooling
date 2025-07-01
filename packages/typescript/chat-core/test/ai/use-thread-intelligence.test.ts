@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, mock, spyOn } from 'bun:test';
+import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import type { UseThreadIntelligenceOptions } from '../../src/ai/types';
 import type { Thread, ThreadsResponse } from '../../src/types';
 
@@ -41,11 +41,11 @@ const mockThreadsResponse: ThreadsResponse = {
 };
 
 describe('useThreadIntelligence', () => {
-  let mockUseThread: any;
-  let mockUseThreads: any;
-  let mockUseUpdateThread: any;
-  let mockUseCopilotReadable: any;
-  let mockUseCopilotAction: any;
+  let _mockUseThread: any;
+  let _mockUseThreads: any;
+  let _mockUseUpdateThread: any;
+  let _mockUseCopilotReadable: any;
+  let _mockUseCopilotAction: any;
   let copilotActionHandlers: Record<string, (params: any) => Promise<string>>;
 
   beforeEach(() => {
@@ -352,7 +352,7 @@ describe('useThreadIntelligence', () => {
     it('should provide proper hook interface', () => {
       // Simulate the expected hook interface
       const hookInterface = {
-        call: (options: UseThreadIntelligenceOptions) => ({
+        call: (_options: UseThreadIntelligenceOptions) => ({
           summary: null,
           suggestedActions: [],
           relatedThreads: [],

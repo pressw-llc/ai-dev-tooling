@@ -1,9 +1,8 @@
 // AI Provider tests
 import React from 'react';
 import { describe, test, expect } from 'bun:test';
-import { AIProvider, useAIConfig } from '../../src/ai/providers/ai-provider';
+import { AIProvider } from '../../src/ai/providers/ai-provider';
 import type { AIProviderProps } from '../../src/ai/types';
-import { AIError, AI_ERROR_CODES } from '../../src/ai/types';
 
 describe('AIProvider', () => {
   const defaultConfig: AIProviderProps['config'] = {
@@ -103,7 +102,7 @@ describe('AIProvider', () => {
       ],
     ];
 
-    validChildren.forEach((children, index) => {
+    validChildren.forEach((children) => {
       expect(() => {
         React.createElement(AIProvider, { config }, children);
       }).not.toThrow();

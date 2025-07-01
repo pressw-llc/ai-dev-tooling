@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useCallback, useState } from 'react';
 import { useCopilotReadable } from '@copilotkit/react-core';
 import type { UseAIContextOptions, AIContextItem } from '../types';
-import type { Thread } from '../../schema';
 import { useThread } from '../../react/thread-hooks';
 
 /**
@@ -13,11 +12,6 @@ const MAX_CONTEXT_SIZE = 50000;
  * Default context priority for thread data
  */
 const THREAD_CONTEXT_PRIORITY = 5;
-
-/**
- * Default context priority for user data
- */
-const USER_CONTEXT_PRIORITY = 3;
 
 /**
  * Hook return type for useAIContext

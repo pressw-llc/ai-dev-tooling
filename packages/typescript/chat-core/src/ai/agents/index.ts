@@ -1,12 +1,8 @@
-import { z } from 'zod';
 import type {
-  AIAgent,
   AIAgentDefinition,
   AIAgentTool,
   AIAgentToolDefinition,
   AIAgentToolHandler,
-  AIActionContext,
-  AIChatConfig,
 } from '../types';
 import { AIError, AI_ERROR_CODES } from '../types';
 

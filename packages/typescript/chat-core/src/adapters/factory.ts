@@ -2,7 +2,7 @@ import type { ChatCoreAdapter, DatabaseProvider } from './types';
 import { createDrizzleAdapter, type DrizzleDB, type DrizzleAdapterConfig } from './drizzle-adapter';
 
 // Simple factory interface that wraps the Drizzle adapter config
-export interface CreateChatCoreAdapterConfig extends Omit<DrizzleAdapterConfig, 'provider'> {}
+export type CreateChatCoreAdapterConfig = Omit<DrizzleAdapterConfig, 'provider'>;
 
 /**
  * Creates a ChatCore adapter that works with user's existing Drizzle database
