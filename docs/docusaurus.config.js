@@ -3,8 +3,8 @@
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'PressW SDK',
-  tagline: 'Multi-language SDK for AI-powered applications',
+  title: 'PressW SDKs',
+  tagline: 'Multi-language SDKs for AI-powered applications',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -15,6 +15,10 @@ const config = {
   // GitHub pages deployment config.
   organizationName: 'pressw',
   projectName: 'ai-dev-tooling',
+  themes: ['@docusaurus/theme-mermaid'],
+  markdown: {
+    mermaid: true,
+  },
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -50,10 +54,11 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'PressW SDK',
+        title: 'SDK',
         logo: {
           alt: 'PressW Logo',
-          src: 'img/logo.svg',
+          src: 'img/pressw-light.svg',
+          srcDark: 'img/pressw-dark.svg',
         },
         items: [
           {
