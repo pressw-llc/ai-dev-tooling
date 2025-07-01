@@ -68,17 +68,15 @@ export function createCopilotKitHandler(config: CopilotKitHandlerConfig) {
    */
   return async function handler(request: NextRequest) {
     try {
-      // TODO: Add in user context
-      // // Get user context from request
-      // let _userContext: UserContext;
-      // try {
-      //   _userContext = await config.getUserContext(request);
-      // } catch (error) {
-      //   throw new AIError(
-      //     `Failed to get user context: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      //     AI_ERROR_CODES.UNAUTHORIZED,
-      //   );
-      // }
+      // Get user context from request
+      try {
+        await config.getUserContext(request);
+      } catch (error) {
+        throw new AIError(
+          `Failed to get user context: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          AI_ERROR_CODES.UNAUTHORIZED,
+        );
+      }
 
       // Extract thread ID from request if available
       const url = new URL(request.url);
