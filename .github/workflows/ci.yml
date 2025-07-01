@@ -85,7 +85,7 @@ jobs:
         run: |
           uv pip install -e ".[dev]"
           uv run pytest --cov=pw_ai_foundation --cov-report=xml
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./packages/python/pw-ai-foundation/coverage.xml
@@ -132,7 +132,7 @@ jobs:
         run: bun install
       - name: Test TypeScript
         run: bun test --coverage
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: typescript
