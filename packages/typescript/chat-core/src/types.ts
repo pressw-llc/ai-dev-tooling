@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import type { Thread } from './schema';
 
+export { Thread };
+
 export const MessageSchema = z.object({
   id: z.string(),
   role: z.enum(['user', 'assistant', 'system']),

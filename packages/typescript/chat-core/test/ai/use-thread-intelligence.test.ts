@@ -36,16 +36,20 @@ const relatedThread: Thread = {
 const mockThreadsResponse: ThreadsResponse = {
   threads: [testThread, relatedThread],
   total: 2,
-  limit: 10,
-  offset: 0,
+  hasMore: false,
 };
 
 describe('useThreadIntelligence', () => {
-  let _mockUseThread: any;
-  let _mockUseThreads: any;
-  let _mockUseUpdateThread: any;
-  let _mockUseCopilotReadable: any;
-  let _mockUseCopilotAction: any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mockUseThread: any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mockUseThreads: any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mockUseUpdateThread: any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mockUseCopilotReadable: any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let mockUseCopilotAction: any;
   let copilotActionHandlers: Record<string, (params: any) => Promise<string>>;
 
   beforeEach(() => {
@@ -144,8 +148,7 @@ describe('useThreadIntelligence', () => {
     it('should validate threads response structure', () => {
       expect(mockThreadsResponse.threads).toHaveLength(2);
       expect(mockThreadsResponse.total).toBe(2);
-      expect(mockThreadsResponse.limit).toBe(10);
-      expect(mockThreadsResponse.offset).toBe(0);
+      expect(mockThreadsResponse.hasMore).toBe(false);
     });
   });
 
@@ -291,7 +294,8 @@ describe('useThreadIntelligence', () => {
     });
 
     it('should handle missing threads list', () => {
-      const nullThreadsList = null;
+      const nullThreadsList: ThreadsResponse | null = null;
+      // @ts-expect-error - nullThreadsList is null
       const isValidThreadsList = nullThreadsList?.threads && Array.isArray(nullThreadsList.threads);
       expect(isValidThreadsList).toBeFalsy();
     });
@@ -313,6 +317,7 @@ describe('useThreadIntelligence', () => {
     it('should handle thread ID mismatches', () => {
       const requestedThreadId = 'thread-123';
       const actualThreadId = 'wrong-thread-id';
+      // @ts-expect-error - requestedThreadId is a string
       const isMatch = requestedThreadId === actualThreadId;
       expect(isMatch).toBe(false);
     });
@@ -432,10 +437,12 @@ describe('useThreadIntelligence', () => {
     });
 
     it('should handle null thread data for context', () => {
-      const nullThread = null;
+      const nullThread: Thread | null = null;
       const threadContext = nullThread
         ? {
+            // @ts-expect-error - nullThread is null
             id: nullThread.id,
+            // @ts-expect-error - nullThread is null
             title: nullThread.title,
             // ... other properties
           }

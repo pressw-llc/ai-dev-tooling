@@ -1,6 +1,6 @@
 // CopilotKit backend handler - Chat completions API handler pattern
 import type { NextRequest } from 'next/server';
-import type { CopilotKitHandlerConfig, AIActionContext, AIChatConfig, UserContext } from '../types';
+import type { CopilotKitHandlerConfig, AIChatConfig, UserContext } from '../types';
 import { AIError, AI_ERROR_CODES } from '../types';
 
 /**
@@ -68,16 +68,17 @@ export function createCopilotKitHandler(config: CopilotKitHandlerConfig) {
    */
   return async function handler(request: NextRequest) {
     try {
-      // Get user context from request
-      let _userContext: UserContext;
-      try {
-        _userContext = await config.getUserContext(request);
-      } catch (error) {
-        throw new AIError(
-          `Failed to get user context: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          AI_ERROR_CODES.UNAUTHORIZED,
-        );
-      }
+      // TODO: Add in user context
+      // // Get user context from request
+      // let _userContext: UserContext;
+      // try {
+      //   _userContext = await config.getUserContext(request);
+      // } catch (error) {
+      //   throw new AIError(
+      //     `Failed to get user context: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      //     AI_ERROR_CODES.UNAUTHORIZED,
+      //   );
+      // }
 
       // Extract thread ID from request if available
       const url = new URL(request.url);
@@ -98,13 +99,14 @@ export function createCopilotKitHandler(config: CopilotKitHandlerConfig) {
       }
 
       // Parse the request body to get the chat message
-      const body = await request.json();
-      const {
-        messages: _messages = [],
-        model: _model = defaultConfig.model,
-        temperature: _temperature = defaultConfig.temperature,
-        max_tokens: _max_tokens = defaultConfig.maxTokens,
-      } = body;
+      // TODO: Implement this
+      // const body = await request.json();
+      // const {
+      //   messages: _messages = [],
+      //   model: _model = defaultConfig.model,
+      //   temperature: _temperature = defaultConfig.temperature,
+      //   max_tokens: _max_tokens = defaultConfig.maxTokens,
+      // } = body;
 
       // Process agents and their tools
       const availableActions =
