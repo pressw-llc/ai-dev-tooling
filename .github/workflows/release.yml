@@ -59,7 +59,7 @@ jobs:
           format: spdx-json
           output-file: pw-ai-foundation-sbom.json
       - name: Attest provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
             ./packages/python/pw-ai-foundation/dist/*.whl
@@ -108,7 +108,7 @@ jobs:
           format: spdx-json
           output-file: ${{ needs.parse-tag.outputs.package }}-sbom.json
       - name: Attest provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v2
         with:
           subject-path: ${{ steps.package-path.outputs.path }}/dist/*
 
