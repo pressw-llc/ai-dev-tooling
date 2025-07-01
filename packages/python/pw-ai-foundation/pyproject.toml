@@ -9,7 +9,7 @@ description = "PressW AI Foundation SDK for Python"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
-authors = [{ name = "Liam DeVoe", email = "liam@pressw.ai" }]
+authors = [{ name = "Liam DeCoste", email = "liam@pressw.ai" }]
 keywords = ["ai", "foundation", "sdk", "pressw"]
 classifiers = [
     "Development Status :: 3 - Alpha",

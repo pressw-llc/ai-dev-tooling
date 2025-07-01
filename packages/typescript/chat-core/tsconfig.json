@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -13,7 +13,10 @@
     "declarationMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["bun-types"]
+    "jsx": "react-jsx",
+    "types": ["bun-types"],
+    "composite": true,
+    "incremental": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]
