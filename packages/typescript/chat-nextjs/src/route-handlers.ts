@@ -99,7 +99,7 @@ async function createThread(
       organizationId: userContext.organizationId,
       tenantId: userContext.tenantId,
       metadata: options.metadata,
-    } as any,
+    } as Parameters<ChatCoreAdapter['create']>[0]['data'],
   });
 }
 
@@ -126,7 +126,7 @@ async function updateThread(
     data: {
       ...updates,
       updatedAt: new Date(),
-    } as any,
+    } as Parameters<ChatCoreAdapter['update']>[0]['data'],
   });
 
   if (!updated) {

@@ -9,6 +9,7 @@
 // import postgres from 'postgres';
 import { DrizzleAdapter, createCatchAllThreadRouteHandler } from './index';
 import type { ThreadRouteConfig, UserContext, DrizzleAdapterConfig } from './index';
+import type { DrizzleDB } from '../adapters/drizzle-adapter';
 
 // ==========================================
 // 1. DATABASE SETUP EXAMPLE
@@ -22,7 +23,7 @@ export function setupDatabase() {
   // const connectionString = process.env.DATABASE_URL!;
   // const queryClient = postgres(connectionString);
   // const db = drizzle(queryClient);
-  const db = {} as any; // Placeholder for example
+  const db = {} as DrizzleDB; // Placeholder for example
 
   // Create adapter with configuration
   const config: DrizzleAdapterConfig = {
@@ -344,7 +345,7 @@ async function getUserContextFromClerk(request: Request): Promise<UserContext> {
 `;
 
 // Mock function for example
-function verifyJWT(_token: string): any {
+function verifyJWT(_token: string): { userId: string; organizationId?: string; tenantId?: string } {
   // Your JWT verification logic
   return { userId: 'user-123', organizationId: 'org-456', tenantId: 'tenant-789' };
 }

@@ -1,10 +1,17 @@
 import type { ChatCoreAdapter, AdapterConfig, Where, CleanedWhere, SortBy } from './types';
 
+// Type for Drizzle table schemas
+type TableSchema = {
+  [key: string]: unknown;
+  $inferSelect?: unknown;
+  $inferInsert?: unknown;
+};
+
 export abstract class BaseAdapter implements ChatCoreAdapter {
   config: AdapterConfig;
-  protected schemas: Record<string, any>;
+  protected schemas: Record<string, TableSchema>;
 
-  constructor(config: AdapterConfig, schemas?: Record<string, any>) {
+  constructor(config: AdapterConfig, schemas?: Record<string, TableSchema>) {
     this.config = {
       usePlural: false,
       debugLogs: false,
@@ -19,7 +26,7 @@ export abstract class BaseAdapter implements ChatCoreAdapter {
   }
 
   // Abstract methods that must be implemented by database-specific adapters
-  abstract create<T extends Record<string, any>>(params: {
+  abstract create<T extends Record<string, unknown>>(params: {
     model: string;
     data: T;
     select?: string[];
@@ -59,8 +66,8 @@ export abstract class BaseAdapter implements ChatCoreAdapter {
     return mapping?.[field] || field;
   }
 
-  protected transformInput(data: Record<string, any>): Record<string, any> {
-    const transformed: Record<string, any> = {};
+  protected transformInput(data: Record<string, unknown>): Record<string, unknown> {
+    const transformed: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(data)) {
       const fieldName = this.getFieldName(key, true);
@@ -97,10 +104,10 @@ export abstract class BaseAdapter implements ChatCoreAdapter {
     return transformed;
   }
 
-  protected transformOutput(data: Record<string, any> | null): Record<string, any> | null {
+  protected transformOutput(data: Record<string, unknown> | null): Record<string, unknown> | null {
     if (!data) return null;
 
-    const transformed: Record<string, any> = {};
+    const transformed: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(data)) {
       const fieldName = this.getFieldName(key, false);
@@ -145,9 +152,9 @@ export abstract class BaseAdapter implements ChatCoreAdapter {
     }));
   }
 
-  protected debugLog(...args: any[]): void {
+  protected debugLog(..._args: unknown[]): void {
     if (this.config.debugLogs) {
-      console.log('[ChatCore Adapter]', ...args);
+      // Console.log removed as requested
     }
   }
 
@@ -155,7 +162,7 @@ export abstract class BaseAdapter implements ChatCoreAdapter {
     return crypto.randomUUID();
   }
 
-  public getSchema(model: string): any {
+  public getSchema(model: string): TableSchema | undefined {
     const modelName = this.getModelName(model);
     return this.schemas[modelName] || this.schemas[model];
   }

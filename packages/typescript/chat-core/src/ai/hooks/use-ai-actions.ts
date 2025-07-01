@@ -95,7 +95,7 @@ export function useAIActions(options: UseAIActionsOptions) {
 
   // Execute action with proper error handling and context validation
   const executeAction = useCallback(
-    async (action: AIActionDefinition, params: any): Promise<string> => {
+    async (action: AIActionDefinition, params: Record<string, unknown>): Promise<string> => {
       if (!enabled) {
         throw new AIError('AI Actions are disabled', AI_ERROR_CODES.UNAUTHORIZED, {
           actionName: action.name,
@@ -278,8 +278,7 @@ export function useAIActions(options: UseAIActionsOptions) {
       // TODO: Implement proper CopilotKit integration once types are resolved
       registeredActions.current.add(action.name);
 
-      // Log for debugging
-      console.log(`[useAIActions] Registered custom action: ${action.name}`);
+      // Action registered: ${action.name}
     });
   }, [actions, enabled]);
 
@@ -319,7 +318,7 @@ export function useAIActions(options: UseAIActionsOptions) {
       deleteThreadError: deleteThreadMutation.error,
 
       // Manual action execution (for programmatic use)
-      executeAction: async (actionName: string, params: any) => {
+      executeAction: async (actionName: string, params: Record<string, unknown>) => {
         const action = actions.find((a) => a.name === actionName);
         if (!action) {
           throw new AIError(`Action not found: ${actionName}`, AI_ERROR_CODES.ACTION_FAILED, {

@@ -4,7 +4,7 @@ export type DatabaseProvider = 'pg' | 'mysql' | 'sqlite';
 
 export interface Where {
   field: string;
-  value: any;
+  value: string | number | boolean | Date | null | string[] | number[];
   operator?:
     | 'eq'
     | 'ne'
@@ -70,7 +70,7 @@ export interface AdapterConfig {
 
 export interface ChatCoreAdapter {
   // CRUD operations
-  create<T extends Record<string, any>>(params: {
+  create<T extends Record<string, unknown>>(params: {
     model: string;
     data: T;
     select?: string[];
@@ -93,22 +93,30 @@ export interface ChatCoreAdapter {
   count(params: { model: string; where?: Where[] }): Promise<number>;
 
   // Schema information
-  getSchema(model: string): any;
+  getSchema(model: string): unknown;
 
   // Configuration
   config: AdapterConfig;
 }
 
-export interface CreateAdapterParams<TDatabase = any> {
+export interface CreateAdapterParams<TDatabase = unknown> {
   database: TDatabase;
   config: AdapterConfig;
-  schemas?: Record<string, any>;
+  schemas?: Record<string, unknown>;
 }
 
 // Validation schemas
 export const WhereSchema = z.object({
   field: z.string(),
-  value: z.any(),
+  value: z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.date(),
+    z.null(),
+    z.array(z.string()),
+    z.array(z.number()),
+  ]),
   operator: z
     .enum(['eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'in', 'contains', 'starts_with', 'ends_with'])
     .optional(),
@@ -134,7 +142,7 @@ export interface AdapterUser extends BaseModel {
 export interface AdapterThread extends BaseModel {
   title?: string;
   userId: string;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 export interface AdapterFeedback extends BaseModel {

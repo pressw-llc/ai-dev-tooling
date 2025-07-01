@@ -113,18 +113,18 @@ export function useThreadIntelligence(
       }
 
       if (threadData.metadata) {
-        const metadata = threadData.metadata as Record<string, any>;
+        const metadata = threadData.metadata as Record<string, unknown>;
         if (metadata.description) {
           summaryText += `Description: ${metadata.description}\n`;
         }
-        if (metadata.tags?.length > 0) {
-          summaryText += `Tags: ${metadata.tags.join(', ')}\n`;
+        if (Array.isArray(metadata.tags) && metadata.tags.length > 0) {
+          summaryText += `Tags: ${(metadata.tags as string[]).join(', ')}\n`;
         }
         if (metadata.messageCount) {
           summaryText += `Messages: ${metadata.messageCount}\n`;
         }
         if (metadata.lastActivity) {
-          summaryText += `Last Activity: ${new Date(metadata.lastActivity).toLocaleDateString()}\n`;
+          summaryText += `Last Activity: ${new Date(metadata.lastActivity as string).toLocaleDateString()}\n`;
         }
       }
 
@@ -181,8 +181,8 @@ export function useThreadIntelligence(
       }
 
       // Suggest metadata enhancement if metadata is sparse
-      const metadata = (threadData.metadata as Record<string, any>) || {};
-      if (!metadata.tags || metadata.tags.length === 0) {
+      const metadata = (threadData.metadata as Record<string, unknown>) || {};
+      if (!metadata.tags || !Array.isArray(metadata.tags) || metadata.tags.length === 0) {
         actions.push({
           title: 'Add Tags',
           description: 'Add relevant tags to help organize and find this thread',
@@ -269,8 +269,10 @@ export function useThreadIntelligence(
 
       const currentThreadId = threadData.id;
       const currentTitle = threadData.title?.toLowerCase() || '';
-      const currentMetadata = (threadData.metadata as Record<string, any>) || {};
-      const currentTags = currentMetadata.tags || [];
+      const currentMetadata = (threadData.metadata as Record<string, unknown>) || {};
+      const currentTags = (
+        Array.isArray(currentMetadata.tags) ? currentMetadata.tags : []
+      ) as string[];
       const currentUserId = threadData.userId;
       const currentOrgId = threadData.organizationId;
 
@@ -279,8 +281,8 @@ export function useThreadIntelligence(
         .filter((t) => t.id !== currentThreadId) // Exclude self
         .map((t) => {
           let score = 0;
-          const tMetadata = (t.metadata as Record<string, any>) || {};
-          const tTags = tMetadata.tags || [];
+          const tMetadata = (t.metadata as Record<string, unknown>) || {};
+          const tTags = (Array.isArray(tMetadata.tags) ? tMetadata.tags : []) as string[];
 
           // Same user gets points
           if (t.userId === currentUserId) score += 2;
@@ -298,7 +300,7 @@ export function useThreadIntelligence(
           }
 
           // Common tags get points
-          const commonTags = currentTags.filter((tag: string) => tTags.includes(tag));
+          const commonTags = currentTags.filter((tag) => tTags.includes(tag));
           score += commonTags.length * 2;
 
           // Recent threads get slight boost

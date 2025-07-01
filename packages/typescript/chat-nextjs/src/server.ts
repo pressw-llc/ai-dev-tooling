@@ -4,6 +4,7 @@ import type {
   ListThreadsOptions,
   ThreadsResponse,
   Thread,
+  Where,
 } from '@pressw/chat-core';
 
 export interface ThreadServerClientConfig {
@@ -44,7 +45,7 @@ export class ThreadServerClient {
         value: options.search,
         operator: 'contains',
         connector: 'AND',
-      } as any);
+      } as Where);
     }
 
     const [threads, total] = await Promise.all([

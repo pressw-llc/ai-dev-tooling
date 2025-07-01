@@ -3,6 +3,7 @@ import type {
   AIAgentTool,
   AIAgentToolDefinition,
   AIAgentToolHandler,
+  AIActionContext,
 } from '../types';
 import { AIError, AI_ERROR_CODES } from '../types';
 
@@ -182,7 +183,7 @@ export function hasAgent(name: string): boolean {
 export async function executeAgentTool(
   agentName: string,
   toolName: string,
-  params: any,
+  params: Record<string, unknown>,
   context: AIActionContext,
 ): Promise<string> {
   const agent = getAgent(agentName);
@@ -245,4 +246,5 @@ export type {
   AIAgentTool,
   AIAgentToolDefinition,
   AIAgentToolHandler,
+  AIActionContext,
 } from '../types';

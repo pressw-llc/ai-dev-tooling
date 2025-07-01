@@ -73,9 +73,9 @@ export interface DrizzleAdapterConfig extends AdapterConfig {
 }
 
 export interface DrizzleDB {
-  [key: string]: any;
+  [key: string]: unknown;
   _?: {
-    fullSchema?: Record<string, any>;
+    fullSchema?: Record<string, unknown>;
   };
 }
 
@@ -83,7 +83,7 @@ export class DrizzleAdapter extends BaseAdapter {
   private db: DrizzleDB;
   private provider: DatabaseProvider;
   private drizzleConfig: DrizzleAdapterConfig;
-  private tableSchemas: Record<string, any> = {};
+  private tableSchemas: Record<string, unknown> = {};
 
   constructor(db: DrizzleDB, config: DrizzleAdapterConfig) {
     super(config);
@@ -122,7 +122,7 @@ export class DrizzleAdapter extends BaseAdapter {
 
   private validateRequiredFields(
     model: keyof DrizzleAdapterConfig['tables'],
-    tableSchema: any,
+    tableSchema: unknown,
     tableName: string,
   ): void {
     const requiredFields = this.getRequiredFields(model);
@@ -157,7 +157,7 @@ export class DrizzleAdapter extends BaseAdapter {
     }
   }
 
-  private getSchemaTable(model: string): any {
+  private getSchemaTable(model: string): unknown {
     const schema = this.tableSchemas[model];
     if (!schema) {
       throw new Error(
@@ -169,7 +169,7 @@ export class DrizzleAdapter extends BaseAdapter {
 
   private getModelFieldName(model: string, field: string): string {
     const modelFields = this.drizzleConfig.fields?.[model as keyof DrizzleAdapterConfig['fields']];
-    return (modelFields as any)?.[field] || field;
+    return (modelFields as Record<string, string>)?.[field] || field;
   }
 
   private buildWhereClause(where: CleanedWhere[], model: string): SQL<unknown>[] {
@@ -198,7 +198,11 @@ export class DrizzleAdapter extends BaseAdapter {
     return clauses;
   }
 
-  private buildSingleCondition(where: CleanedWhere, table: any, model: string): SQL<unknown> {
+  private buildSingleCondition(
+    where: CleanedWhere,
+    table: Record<string, unknown>,
+    model: string,
+  ): SQL<unknown> {
     const fieldName = this.getModelFieldName(model, where.field);
     const field = table[fieldName];
 
@@ -235,8 +239,11 @@ export class DrizzleAdapter extends BaseAdapter {
     }
   }
 
-  private transformModelInput(data: Record<string, any>, model: string): Record<string, any> {
-    const transformed: Record<string, any> = {};
+  private transformModelInput(
+    data: Record<string, unknown>,
+    model: string,
+  ): Record<string, unknown> {
+    const transformed: Record<string, unknown> = {};
 
     for (const [chatCoreField, value] of Object.entries(data)) {
       const actualFieldName = this.getModelFieldName(model, chatCoreField);
@@ -270,12 +277,12 @@ export class DrizzleAdapter extends BaseAdapter {
   }
 
   private transformModelOutput(
-    data: Record<string, any> | null,
+    data: Record<string, unknown> | null,
     model: string,
-  ): Record<string, any> | null {
+  ): Record<string, unknown> | null {
     if (!data) return null;
 
-    const transformed: Record<string, any> = {};
+    const transformed: Record<string, unknown> = {};
     const fieldMapping =
       this.drizzleConfig.fields?.[model as keyof DrizzleAdapterConfig['fields']] || {};
 
@@ -321,12 +328,12 @@ export class DrizzleAdapter extends BaseAdapter {
 
   private async withReturning<T>(
     model: string,
-    builder: any,
-    data: Record<string, any>,
+    builder: { returning?: () => Promise<unknown[]>; execute: () => Promise<unknown> },
+    data: Record<string, unknown>,
   ): Promise<T> {
-    if (this.config.supportsReturning) {
+    if (this.config.supportsReturning && builder.returning) {
       const result = await builder.returning();
-      return this.transformModelOutput(result[0], model) as T;
+      return this.transformModelOutput(result[0] as Record<string, unknown>, model) as T;
     }
 
     // For databases without RETURNING support
@@ -344,7 +351,7 @@ export class DrizzleAdapter extends BaseAdapter {
     throw new Error('Unable to retrieve created record. Consider enabling ID generation.');
   }
 
-  async create<T extends Record<string, any>>(params: {
+  async create<T extends Record<string, unknown>>(params: {
     model: string;
     data: T;
     select?: string[];
@@ -413,7 +420,9 @@ export class DrizzleAdapter extends BaseAdapter {
     }
 
     const results = await builder.where(...whereClause);
-    return results.map((r: any) => this.transformModelOutput(r, params.model)) as T[];
+    return results.map((r: unknown) =>
+      this.transformModelOutput(r as Record<string, unknown>, params.model),
+    ) as T[];
   }
 
   async update<T>(params: { model: string; where: Where[]; data: Partial<T> }): Promise<T | null> {
@@ -423,7 +432,7 @@ export class DrizzleAdapter extends BaseAdapter {
       params.model,
     );
     const transformedData = this.transformModelInput(
-      params.data as Record<string, any>,
+      params.data as Record<string, unknown>,
       params.model,
     );
 
@@ -459,7 +468,7 @@ export class DrizzleAdapter extends BaseAdapter {
     return result[0].count;
   }
 
-  getSchema(model: string): any {
+  getSchema(model: string): unknown {
     return this.getSchemaTable(model);
   }
 }

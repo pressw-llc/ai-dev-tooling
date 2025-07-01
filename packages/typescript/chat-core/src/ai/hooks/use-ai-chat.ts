@@ -10,18 +10,31 @@ import type {
 import { AIError, AI_ERROR_CODES } from '../types';
 
 // Type for CopilotKit integration (to be properly typed when available)
+interface CopilotMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  metadata?: Record<string, unknown>;
+}
+
 interface CopilotChatHook {
-  messages: any[];
+  messages: CopilotMessage[];
   isLoading: boolean;
   append: (message: { role: string; content: string }) => Promise<void>;
-  setMessages: (messages: any[]) => void;
+  setMessages: (messages: CopilotMessage[]) => void;
+}
+
+interface UseCopilotChatOptions {
+  instructions?: string;
+  initialMessages?: CopilotMessage[];
+  onError?: (error: Error) => void;
 }
 
 // Placeholder implementation of useCopilotChat
 // TODO: Replace with actual CopilotKit useCopilotChat import once API is verified
 // This mock provides the expected interface and simulates AI responses
-function useCopilotChat(options: any): CopilotChatHook {
-  const [messages, setMessages] = useState<any[]>(options.initialMessages || []);
+function useCopilotChat(options: UseCopilotChatOptions): CopilotChatHook {
+  const [messages, setMessages] = useState<CopilotMessage[]>(options.initialMessages || []);
   const [isLoading, setIsLoading] = useState(false);
 
   const append = useCallback(
@@ -29,9 +42,9 @@ function useCopilotChat(options: any): CopilotChatHook {
       setIsLoading(true);
       try {
         // Add user message
-        const userMessage = {
+        const userMessage: CopilotMessage = {
           id: `msg-${Date.now()}-user`,
-          role: message.role,
+          role: message.role as 'user' | 'assistant' | 'system',
           content: message.content,
         };
 
@@ -39,9 +52,9 @@ function useCopilotChat(options: any): CopilotChatHook {
 
         // Simulate AI response
         setTimeout(() => {
-          const aiMessage = {
+          const aiMessage: CopilotMessage = {
             id: `msg-${Date.now()}-ai`,
-            role: 'assistant',
+            role: 'assistant' as const,
             content: `Echo: ${message.content}`,
           };
           setMessages((prev) => [...prev, aiMessage]);
@@ -49,7 +62,7 @@ function useCopilotChat(options: any): CopilotChatHook {
         }, 1000);
       } catch (error) {
         setIsLoading(false);
-        options.onError?.(error);
+        options.onError?.(error instanceof Error ? error : new Error(String(error)));
       }
     },
     [options],
@@ -137,7 +150,7 @@ export function useAIChat(options: UseAIChatOptions = {}): UseAIChatReturn {
 
   // Convert CopilotKit messages to AIMessage format
   const convertMessages = useCallback(
-    (copilotMessages: any[]): AIMessage[] => {
+    (copilotMessages: CopilotMessage[]): AIMessage[] => {
       return copilotMessages.map((msg) => ({
         id: msg.id || `msg-${Date.now()}-${Math.random()}`,
         role: msg.role as 'user' | 'assistant' | 'system',
@@ -161,7 +174,7 @@ export function useAIChat(options: UseAIChatOptions = {}): UseAIChatReturn {
   // Load messages from thread if available
   useEffect(() => {
     if (thread?.metadata && typeof thread.metadata === 'object' && thread.metadata !== null) {
-      const metadata = thread.metadata as Record<string, any>;
+      const metadata = thread.metadata as Record<string, unknown>;
       if (metadata.messages && Array.isArray(metadata.messages)) {
         const threadMessages = metadata.messages as AIMessage[];
         setMessages(threadMessages);
@@ -228,7 +241,7 @@ export function useAIChat(options: UseAIChatOptions = {}): UseAIChatReturn {
           updates: {
             metadata: {
               ...(thread?.metadata && typeof thread.metadata === 'object'
-                ? (thread.metadata as Record<string, any>)
+                ? (thread.metadata as Record<string, unknown>)
                 : {}),
               messages: newMessages,
               lastActivity: new Date().toISOString(),

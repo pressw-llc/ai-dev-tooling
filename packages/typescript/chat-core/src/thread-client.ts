@@ -1,4 +1,4 @@
-import type { ChatCoreAdapter, Where } from './adapters/types';
+import type { ChatCoreAdapter } from './adapters/types';
 import type {
   UserContext,
   CreateThreadOptions,
@@ -48,7 +48,7 @@ export class ThreadUtilityClient {
           organizationId: userContext.organizationId,
           tenantId: userContext.tenantId,
           metadata: options.metadata,
-        } as any,
+        } as Parameters<ChatCoreAdapter['create']>[0]['data'],
       }),
     );
   }
@@ -68,7 +68,7 @@ export class ThreadUtilityClient {
         data: {
           ...updates,
           updatedAt: new Date(),
-        } as any,
+        } as Parameters<ChatCoreAdapter['update']>[0]['data'],
       });
 
       if (!updated) {
@@ -113,7 +113,7 @@ export class ThreadUtilityClient {
           value: fullOptions.search,
           operator: 'contains',
           connector: 'AND',
-        } as Where);
+        });
       }
 
       const [threads, total] = await Promise.all([

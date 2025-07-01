@@ -2,6 +2,7 @@
 import type { NextRequest } from 'next/server';
 import type { CopilotKitHandlerConfig, AIChatConfig, UserContext } from '../types';
 import { AIError, AI_ERROR_CODES } from '../types';
+import type { Thread } from '../../schema';
 
 /**
  * Creates a Next.js API route handler for CopilotKit integration
@@ -83,13 +84,14 @@ export function createCopilotKitHandler(config: CopilotKitHandlerConfig) {
       const threadId = url.searchParams.get('threadId') || undefined;
 
       // Get thread from adapter if threadId is provided
-      let thread: any = undefined;
+      let thread: Thread | undefined = undefined;
       if (threadId) {
         try {
-          thread = await config.adapter.findOne({
+          const result = await config.adapter.findOne<Thread>({
             model: 'thread',
             where: [{ field: 'id', value: threadId }],
           });
+          thread = result || undefined;
         } catch (error) {
           // Thread not found is not necessarily an error for new conversations
           console.warn(`Thread ${threadId} not found or inaccessible:`, error);
@@ -151,16 +153,14 @@ export function createCopilotKitHandler(config: CopilotKitHandlerConfig) {
         },
       };
 
-      // Log any agent action availability for debugging
+      // Note: Agent actions are available for use
       if (availableActions.length > 0) {
-        console.log(
-          `CopilotKit handler: ${availableActions.length} agents available with ${availableActions.reduce((total, a) => total + a.tools.length, 0)} tools`,
-        );
+        // ${availableActions.length} agents available with tools
       }
 
       // If we have a thread ID, optionally save the interaction
       if (threadId && thread) {
-        console.log(`CopilotKit handler processing request for thread ${threadId}`);
+        // TODO: Implement interaction saving
       }
 
       return new Response(JSON.stringify(completion), {

@@ -144,7 +144,12 @@ export interface UseThreadOptions
 
 export interface UseCreateThreadOptions
   extends Omit<
-    UseMutationOptions<Thread, Error, CreateThreadOptions, { previousThreads: any[] }>,
+    UseMutationOptions<
+      Thread,
+      Error,
+      CreateThreadOptions,
+      { previousThreads: Array<[QueryKey, ThreadsResponse | undefined]> }
+    >,
     'mutationFn'
   > {
   apiClient?: DefaultThreadApiClient;
@@ -169,7 +174,10 @@ export interface UseDeleteThreadOptions
       void,
       Error,
       string,
-      { previousThread?: Thread; previousThreadsQueries: any[] }
+      {
+        previousThread?: Thread;
+        previousThreadsQueries: Array<[QueryKey, ThreadsResponse | undefined]>;
+      }
     >,
     'mutationFn'
   > {
@@ -241,7 +249,7 @@ export function useCreateThread(options: UseCreateThreadOptions = {}) {
     onError: (err, newThread, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousThreads) {
-        context.previousThreads.forEach(([queryKey, data]: [any, any]) => {
+        context.previousThreads.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
         });
       }
@@ -336,7 +344,7 @@ export function useDeleteThread(options: UseDeleteThreadOptions = {}) {
         queryClient.setQueryData(threadQueryKeys.detail(id), context.previousThread);
       }
       if (context?.previousThreadsQueries) {
-        context.previousThreadsQueries.forEach(([queryKey, data]: [any, any]) => {
+        context.previousThreadsQueries.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
         });
       }

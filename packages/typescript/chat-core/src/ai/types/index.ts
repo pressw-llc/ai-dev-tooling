@@ -73,7 +73,7 @@ export interface AIActionContext {
 }
 
 // Action handler function type
-export type AIActionHandler<TParams = any> = (
+export type AIActionHandler<TParams = Record<string, unknown>> = (
   params: TParams,
   context: AIActionContext,
 ) => Promise<string>;
@@ -118,7 +118,7 @@ export type AIAgentTool = z.infer<typeof AIAgentToolSchema>;
 export type AIAgent = z.infer<typeof AIAgentSchema>;
 
 // Agent tool handler
-export type AIAgentToolHandler<TParams = any> = (
+export type AIAgentToolHandler<TParams = Record<string, unknown>> = (
   params: TParams,
   context: AIActionContext,
 ) => Promise<string>;
@@ -252,13 +252,9 @@ export type AIErrorCode = (typeof AI_ERROR_CODES)[keyof typeof AI_ERROR_CODES];
 // ========================================
 
 // Extract handler params from action definition
-export type ActionParams<T extends AIActionDefinition> = T extends AIActionDefinition ? any : never;
-
-// React types for hooks
-export interface React {
-  FormEvent: any;
-  ReactNode: any;
-}
+export type ActionParams<T extends AIActionDefinition> = T extends AIActionDefinition
+  ? Parameters<T['handler']>[0]
+  : never;
 
 // Re-export important types for AI module
 export type { UserContext } from '../../types';
