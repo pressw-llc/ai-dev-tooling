@@ -578,8 +578,5 @@ export async function OPTIONS() {
 
 ## Next Steps
 
-- [API Reference](../api) - Detailed API documentation
-- [Integration Patterns](./integration-patterns) - Advanced integration examples
 - [Authentication Guide](./authentication) - In-depth authentication setup
 - [Server Components](./server-components) - Using threads in Server Components
-- [Performance Optimization](./performance) - Optimizing your thread implementation

@@ -847,6 +847,5 @@ export default function ThreadsError({
 
 ## Next Steps
 
-- [Performance Optimization](./performance) - Advanced performance techniques
-- [Integration Patterns](./integration-patterns) - Complex integration examples
-- [API Reference](../api) - Complete API documentation
+- [Getting Started](./getting-started) - Initial setup guide
+- [Authentication Guide](./authentication) - Authentication implementation details

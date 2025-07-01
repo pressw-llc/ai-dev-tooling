@@ -701,5 +701,3 @@ describe('Thread API Authentication', () => {
 ## Next Steps
 
 - [Server Components Guide](./server-components) - Using authentication in Server Components
-- [Performance Optimization](./performance) - Optimizing authentication performance
-- [Integration Patterns](./integration-patterns) - Advanced integration examples

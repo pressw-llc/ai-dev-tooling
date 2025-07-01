@@ -534,4 +534,3 @@ const createProjectThread = (projectId: string, taskId?: string) => {
 
 - [AI-Powered Chat](./ai-chat) - Add intelligent conversations to your threads
 - [Database Adapters](./adapters/overview) - Set up your database integration
-- [API Reference](./api) - Detailed API documentation

@@ -526,5 +526,3 @@ const createTaskAction: AIAction = {
 - [Database Adapters](./adapters/overview) - Set up your database integration
 - **@pressw/chat-ui** - Pre-built UI components that use these business logic hooks
 - [CopilotKit Documentation](https://docs.copilotkit.ai) - Learn more about the underlying AI framework
-- [API Reference](./api) - Detailed API documentation
-- [Examples](./examples) - See complete implementation examples
