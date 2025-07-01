@@ -13,7 +13,50 @@
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
-  tutorialSidebar: ['intro'],
+  tutorialSidebar: [
+    'intro',
+    {
+      type: 'category',
+      label: 'TypeScript',
+      items: [
+        {
+          type: 'category',
+          label: 'Chat Core',
+          items: [
+            'typescript/chat-core/index',
+            'typescript/chat-core/threads',
+            'typescript/chat-core/ai-chat',
+            {
+              type: 'category',
+              label: 'Database Adapters',
+              items: [
+                'typescript/chat-core/adapters/overview',
+                'typescript/chat-core/adapters/drizzle',
+              ],
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Chat Next.js',
+          items: [
+            'typescript/chat-nextjs/index',
+            'typescript/chat-nextjs/api',
+            {
+              type: 'category',
+              label: 'Guides',
+              items: [
+                'typescript/chat-nextjs/guides/getting-started',
+                'typescript/chat-nextjs/guides/authentication',
+                'typescript/chat-nextjs/guides/server-components',
+              ],
+            },
+            'typescript/chat-nextjs/examples',
+          ],
+        },
+      ],
+    },
+  ],
 };
 
 module.exports = sidebars;
