@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Message } from '@pressw/chat-core';
+import type { Message } from '@pressw/threads';
 
 export interface MessageListProps {
   messages: Message[];

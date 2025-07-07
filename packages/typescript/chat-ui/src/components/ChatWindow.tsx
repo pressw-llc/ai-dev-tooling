@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Message } from '@pressw/chat-core';
+import type { Message } from '@pressw/threads';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 

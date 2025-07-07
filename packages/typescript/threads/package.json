@@ -1,0 +1,72 @@
+{
+  "name": "@pressw/threads",
+  "version": "0.0.1",
+  "description": "Thread management system for PressW SDK",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react.mjs",
+      "require": "./dist/react.cjs",
+      "types": "./dist/react.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun build src/index.ts --outfile dist/index.mjs --format esm && bun build src/index.ts --outfile dist/index.cjs --format cjs && bun build src/react.ts --outfile dist/react.mjs --format esm && bun build src/react.ts --outfile dist/react.cjs --format cjs && tsc --emitDeclarationOnly",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "threads",
+    "thread-management",
+    "sdk",
+    "pressw"
+  ],
+  "author": "PressW Team <sdk@pressw.ai>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pressw/ai-dev-tooling.git",
+    "directory": "packages/typescript/threads"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.4",
+    "zod": "^3.23.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-query": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.59.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/bun": "latest",
+    "@types/react": "^18.3.0",
+    "next": "^15.0.0",
+    "react": "^18.3.0",
+    "typescript": "^5.4.5",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

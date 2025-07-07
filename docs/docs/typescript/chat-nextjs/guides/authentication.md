@@ -17,7 +17,7 @@ The `@pressw/chat-nextjs` package requires a `getUserContext` function that extr
 ## Authentication Function Interface
 
 ```typescript
-import type { GetUserContextFn, UserContext } from '@pressw/chat-core';
+import type { GetUserContextFn, UserContext } from '@pressw/threads';
 import { NextRequest } from 'next/server';
 
 type GetUserContextFn = (request: NextRequest) => Promise<UserContext>;
@@ -39,7 +39,7 @@ Most common for API-based authentication.
 // lib/auth/jwt.ts
 import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 
 export const getUserContextFromJWT: GetUserContextFn = async (request: NextRequest) => {
   const authHeader = request.headers.get('authorization');
@@ -76,7 +76,7 @@ export const getUserContextFromJWT: GetUserContextFn = async (request: NextReque
 
 ```typescript
 // components/ThreadList.tsx
-import { useThreads } from '@pressw/chat-core/react';
+import { useThreads } from '@pressw/threads/react';
 
 function ThreadList() {
   const { data, error } = useThreads({
@@ -99,7 +99,7 @@ Using cookies and server-side sessions.
 ```typescript
 // lib/auth/session.ts
 import { NextRequest } from 'next/server';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 import { decrypt } from '@/lib/crypto'; // Your session decryption logic
 
 interface SessionData {
@@ -171,7 +171,7 @@ Using NextAuth.js for authentication.
 // lib/auth/nextauth.ts
 import { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 
 export const getUserContextFromNextAuth: GetUserContextFn = async (request: NextRequest) => {
   const token = await getToken({
@@ -229,7 +229,7 @@ For service-to-service or programmatic access.
 ```typescript
 // lib/auth/api-key.ts
 import { NextRequest } from 'next/server';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 import { validateApiKey } from '@/lib/api-keys'; // Your API key validation
 
 export const getUserContextFromApiKey: GetUserContextFn = async (request: NextRequest) => {
@@ -313,7 +313,7 @@ Combining multiple authentication methods.
 ```typescript
 // lib/auth/multi-strategy.ts
 import { NextRequest } from 'next/server';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 import { getUserContextFromJWT } from './jwt';
 import { getUserContextFromSession } from './session';
 import { getUserContextFromApiKey } from './api-key';
@@ -410,7 +410,7 @@ export async function resolveTenant(userId: string, requestContext: any) {
 
 ```typescript
 // lib/auth/rbac.ts
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 
 interface ExtendedUserContext extends UserContext {
   roles: string[];

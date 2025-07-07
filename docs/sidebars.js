@@ -21,19 +21,13 @@ const sidebars = {
       items: [
         {
           type: 'category',
-          label: 'Chat Core',
+          label: 'Threads',
           items: [
-            'typescript/chat-core/index',
-            'typescript/chat-core/threads',
-            'typescript/chat-core/ai-chat',
-            {
-              type: 'category',
-              label: 'Database Adapters',
-              items: [
-                'typescript/chat-core/adapters/overview',
-                'typescript/chat-core/adapters/drizzle',
-              ],
-            },
+            'typescript/threads/index',
+            'typescript/threads/api',
+            'typescript/threads/react-hooks',
+            'typescript/threads/adapters',
+            'typescript/threads/examples',
           ],
         },
         {

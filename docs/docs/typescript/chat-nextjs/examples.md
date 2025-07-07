@@ -108,7 +108,7 @@ export const db = drizzle(client, { schema: { threads } });
 
 ```typescript
 // lib/adapter.ts
-import { createDrizzleAdapter } from '@pressw/chat-core/adapters';
+import { createDrizzleAdapter } from '@pressw/threads/adapters';
 import { db } from './db';
 
 export const adapter = createDrizzleAdapter({
@@ -132,7 +132,7 @@ export const adapter = createDrizzleAdapter({
 // lib/auth.ts
 import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 
 export const getUserContext: GetUserContextFn = async (request: NextRequest) => {
   // Try multiple authentication methods
@@ -224,7 +224,7 @@ export const DELETE = handlers.DELETE;
 'use client';
 
 import { useState } from 'react';
-import { useCreateThread } from '@pressw/chat-core/react';
+import { useCreateThread } from '@pressw/threads/react';
 
 interface CreateThreadFormProps {
   onSuccess?: () => void;
@@ -321,7 +321,7 @@ export function CreateThreadForm({ onSuccess }: CreateThreadFormProps) {
 'use client';
 
 import { useState } from 'react';
-import { useThreads, useDeleteThread } from '@pressw/chat-core/react';
+import { useThreads, useDeleteThread } from '@pressw/threads/react';
 import { CreateThreadForm } from './CreateThreadForm';
 import Link from 'next/link';
 
@@ -490,7 +490,7 @@ export function ThreadList() {
 'use client';
 
 import { useState } from 'react';
-import { useThread, useUpdateThread, useDeleteThread } from '@pressw/chat-core/react';
+import { useThread, useUpdateThread, useDeleteThread } from '@pressw/threads/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -709,7 +709,7 @@ export function ThreadDetail({ threadId }: ThreadDetailProps) {
         <h2 className="text-lg font-semibold mb-4">Thread Messages</h2>
         <p className="text-gray-600">
           Thread messages functionality can be implemented here using additional
-          chat-core features.
+          threads features.
         </p>
       </div>
     </div>
@@ -866,7 +866,7 @@ export function QueryClientProvider({
   },
   "dependencies": {
     "@pressw/chat-nextjs": "^1.0.0",
-    "@pressw/chat-core": "^1.0.0",
+    "@pressw/threads": "^1.0.0",
     "@tanstack/react-query": "^5.0.0",
     "@tanstack/react-query-devtools": "^5.0.0",
     "drizzle-orm": "^0.30.0",
@@ -894,7 +894,7 @@ export function QueryClientProvider({
 ```typescript
 // lib/tenant-resolver.ts
 import { NextRequest } from 'next/server';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 
 export const getTenantFromSubdomain = (request: NextRequest): string | null => {
   const host = request.headers.get('host');

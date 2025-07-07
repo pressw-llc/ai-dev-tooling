@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "build": "bun run build:core && bun run build:ui",
-    "build:core": "cd packages/typescript/chat-core && bun run build",
+    "build:core": "cd packages/typescript/threads && bun run build",
     "build:ui": "cd packages/typescript/chat-ui && bun run build",
     "test": "bun test",
     "lint": "bunx eslint . --fix",

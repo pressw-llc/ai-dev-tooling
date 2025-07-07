@@ -6,6 +6,16 @@ sidebar_position: 1
 
 Welcome to the **PressW SDK** documentation. This monorepo hosts multiple language SDKs for building AI-powered applications.
 
+:::warning Beta Software
+These packages are in **extremely early beta**. APIs may change, features may be incomplete, and bugs are expected. We greatly appreciate all feedback and bug reports to help us improve!
+
+**How to provide feedback:**
+
+- 🐛 [Report bugs on GitHub](https://github.com/pressw/ai-dev-tooling/issues/new)
+- 💬 [Join discussions](https://github.com/pressw/ai-dev-tooling/discussions)
+- ⭐ [Star the repository](https://github.com/pressw/ai-dev-tooling) to show support
+  :::
+
 ## Available SDKs
 
 ### Python SDK (`pw-ai-foundation`)
@@ -19,13 +29,23 @@ Our Python SDK provides:
 
 ### TypeScript SDKs
 
-#### `@pressw/chat-core`
+#### `@pressw/threads`
 
-Core chat functionality including:
+Flexible thread management library for building:
 
-- Chat client implementation
-- Message handling
-- Type definitions with Zod validation
+- Conversational interfaces
+- Support ticket systems
+- Task management
+- Discussion forums
+- Any threaded data structure
+
+Features include:
+
+- Thread-first architecture
+- Database agnostic (PostgreSQL, MySQL, SQLite)
+- Multi-tenant support
+- React hooks with optimistic updates
+- Full TypeScript support with Zod validation
 
 #### `@pressw/chat-ui`
 
@@ -33,14 +53,14 @@ React components for chat interfaces:
 
 - Pre-built UI components
 - Customizable styling
-- Integration with chat-core
+- Integration with threads package
 
 ## Quick Start
 
 Choose your language to get started:
 
 - **Python**: Install with `pip install pw-ai-foundation`
-- **TypeScript**: Install with `bun add @pressw/chat-core @pressw/chat-ui`
+- **TypeScript**: Install with `bun add @pressw/threads @pressw/chat-ui`
 
 ## Features
 

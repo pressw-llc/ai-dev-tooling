@@ -13,6 +13,12 @@ function HomepageHeader() {
       <div className="container">
         <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
         <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
+        <div className={styles.betaNotice}>
+          <span className={styles.betaBadge}>🚧 BETA</span>
+          <p className={styles.betaText}>
+            These packages are in extremely early beta. We appreciate all feedback and bug reports!
+          </p>
+        </div>
         <div className={styles.buttons}>
           <Link
             className={clsx('button button--secondary button--lg', styles.getStartedButton)}
@@ -68,17 +74,17 @@ export default function Home() {
 
   const packages = [
     {
-      title: '@pressw/chat-core',
+      title: '@pressw/threads',
       description:
-        'Framework-agnostic TypeScript chat functionality with client implementation, message handling, and Zod validation. Works with React, Vue, or any framework.',
+        'Flexible thread management library for building conversational interfaces, support systems, task management, and any threaded data structure. Database agnostic with React hooks.',
       category: 'TypeScript',
-      icon: '⚡',
-      docLink: '/docs/typescript/chat-core',
+      icon: '🧵',
+      docLink: '/docs/typescript/threads',
     },
     {
       title: '@pressw/chat-nextjs',
       description:
-        'Next.js specific integrations for chat-core including route handlers, Server Components support, and optimized SSR/SSG functionality.',
+        'Next.js specific integrations for threads including route handlers, Server Components support, and optimized SSR/SSG functionality.',
       category: 'TypeScript',
       icon: '▲',
       docLink: '/docs/typescript/chat-nextjs',
@@ -94,7 +100,7 @@ export default function Home() {
     {
       title: '@pressw/chat-ui',
       description:
-        'Pre-built React UI components for chat interfaces with customizable styling, themes, and seamless chat-core integration.',
+        'Pre-built React UI components for chat interfaces with customizable styling, themes, and seamless threads integration.',
       category: 'TypeScript',
       icon: '🎨',
       status: 'Coming Soon',
@@ -120,6 +126,32 @@ export default function Home() {
               {packages.map((pkg, idx) => (
                 <PackageCard key={idx} {...pkg} />
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.betaFeedback}>
+          <div className="container">
+            <div className={styles.feedbackContent}>
+              <h2 className={styles.feedbackTitle}>🙏 We Need Your Feedback!</h2>
+              <p className={styles.feedbackDescription}>
+                As these packages are in extremely early beta, your feedback is invaluable. Help us
+                improve by reporting bugs, suggesting features, or sharing your experience.
+              </p>
+              <div className={styles.feedbackButtons}>
+                <Link
+                  className="button button--primary button--lg"
+                  to="https://github.com/pressw/ai-dev-tooling/issues/new"
+                >
+                  🐛 Report an Issue
+                </Link>
+                <Link
+                  className="button button--secondary button--lg"
+                  to="https://github.com/pressw/ai-dev-tooling/discussions"
+                >
+                  💬 Join Discussions
+                </Link>
+              </div>
             </div>
           </div>
         </section>
