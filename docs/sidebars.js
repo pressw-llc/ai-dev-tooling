@@ -32,6 +32,23 @@ const sidebars = {
         },
         {
           type: 'category',
+          label: 'Threads LangGraph',
+          items: [
+            'typescript/threads-langgraph/index',
+            'typescript/threads-langgraph/api',
+            'typescript/threads-langgraph/examples',
+            {
+              type: 'category',
+              label: 'Guides',
+              items: [
+                'typescript/threads-langgraph/guides/integration',
+                'typescript/threads-langgraph/guides/migration',
+              ],
+            },
+          ],
+        },
+        {
+          type: 'category',
           label: 'Chat Next.js',
           items: [
             'typescript/chat-nextjs/index',

@@ -16,6 +16,7 @@
   "include": [],
   "references": [
     { "path": "./packages/typescript/threads" },
+    { "path": "./packages/typescript/threads-langgraph" },
     { "path": "./packages/typescript/chat-ui" }
   ]
 }

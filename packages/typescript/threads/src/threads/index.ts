@@ -7,12 +7,13 @@ export { DrizzleAdapter } from '../adapters/drizzle-adapter';
 export type { DrizzleAdapterConfig, DrizzleDB } from '../adapters/drizzle-adapter';
 
 // Next.js route handler exports
-export {
-  createThreadRouteHandlers,
-  createThreadDetailRouteHandlers,
-  createCatchAllThreadRouteHandler,
-} from '../nextjs/route-handlers';
-export type { ThreadRouteConfig } from '../nextjs/route-handlers';
+// TODO: Fix these imports once nextjs module is available
+// export {
+//   createThreadRouteHandlers,
+//   createThreadDetailRouteHandlers,
+//   createCatchAllThreadRouteHandler,
+// } from '../nextjs/route-handlers';
+// export type { ThreadRouteConfig } from '../nextjs/route-handlers';
 
 // React hooks exports
 export {

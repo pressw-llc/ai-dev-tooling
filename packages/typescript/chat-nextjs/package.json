@@ -48,7 +48,7 @@
     "directory": "packages/typescript/chat-nextjs"
   },
   "dependencies": {
-    "@pressw/chat-core": "workspace:*",
+    "@pressw/threads": "workspace:*",
     "zod": "^3.23.0"
   },
   "peerDependencies": {

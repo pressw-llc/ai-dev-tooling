@@ -47,6 +47,16 @@ Features include:
 - React hooks with optimistic updates
 - Full TypeScript support with Zod validation
 
+#### `@pressw/threads-langgraph`
+
+LangGraph Cloud adapter for thread management:
+
+- Seamless integration with LangGraph Cloud
+- Persistent thread state management
+- Built-in conversation history
+- Compatible with LangGraph assistants
+- Full compatibility with `@pressw/threads` interface
+
 #### `@pressw/chat-ui`
 
 React components for chat interfaces:
@@ -60,7 +70,10 @@ React components for chat interfaces:
 Choose your language to get started:
 
 - **Python**: Install with `pip install pw-ai-foundation`
-- **TypeScript**: Install with `bun add @pressw/threads @pressw/chat-ui`
+- **TypeScript**:
+  - Thread management: `bun add @pressw/threads`
+  - LangGraph integration: `bun add @pressw/threads-langgraph`
+  - Chat UI components: `bun add @pressw/chat-ui`
 
 ## Features
 
