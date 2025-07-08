@@ -147,7 +147,7 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
       });
 
       // Transform results
-      const results = threads.map((thread: any) => ({
+      const results = threads.map((thread) => ({
         id: thread.thread_id,
         title: thread.metadata?.title as string | undefined,
         userId: thread.metadata?.userId as string,
@@ -158,7 +158,7 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
         updatedAt: new Date(thread.updated_at),
       }));
 
-      return results.map((r: any) => this.transformOutput(r)) as T[];
+      return results.map((r: Record<string, unknown>) => this.transformOutput(r)) as T[];
     }
 
     throw new Error(`Model ${model} not supported by LangGraphAdapter`);
@@ -185,7 +185,8 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
       // Update thread metadata
       const updatedThread = await this.threads.update(idWhere.value as string, {
         metadata: {
-          ...(existing as any).metadata,
+          ...((existing as Record<string, unknown> & { metadata?: Record<string, unknown> })
+            .metadata || {}),
           ...transformedData,
           updatedAt: new Date().toISOString(),
         },
@@ -219,7 +220,7 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
       }
 
       // Verify access before deletion
-      const existing = await this.findOne<any>({ model, where });
+      const existing = await this.findOne<Record<string, unknown>>({ model, where });
       if (!existing) {
         throw new Error('Thread not found or access denied');
       }
@@ -237,7 +238,7 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
     if (model === 'thread') {
       // LangGraph doesn't have a direct count API, so we'll use search with limit 0
       // and rely on the total count if available, or do a full search
-      const threads = await this.findMany<any>({
+      const threads = await this.findMany<Record<string, unknown>>({
         model,
         where,
         limit: 1000, // Maximum we can fetch
@@ -250,7 +251,7 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
     throw new Error(`Model ${model} not supported by LangGraphAdapter`);
   }
 
-  getSchema(model: string): any {
+  getSchema(model: string): Record<string, string> | undefined {
     // LangGraph doesn't expose schemas, return a basic structure
     if (model === 'thread') {
       return {

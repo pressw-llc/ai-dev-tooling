@@ -2,253 +2,537 @@
 sidebar_position: 1
 ---
 
-# Threads LangGraph Adapter
+# @pressw/threads-langgraph
 
-The `@pressw/threads-langgraph` package provides a seamless adapter for integrating LangGraph Cloud's thread management system with the PressW Threads SDK. This adapter enables you to leverage LangGraph Cloud's powerful conversational AI infrastructure while maintaining compatibility with the standard PressW thread management interface.
+LangGraph Cloud adapter for @pressw/threads, providing managed thread storage with built-in scalability and assistant integration.
 
 ## Overview
 
-LangGraph Cloud is a deployment platform for LangGraph applications that provides persistent thread management, state tracking, and conversational history. This adapter bridges the gap between LangGraph's cloud infrastructure and PressW's thread management patterns.
+`@pressw/threads-langgraph` connects your thread management to [LangGraph Cloud](https://langchain-ai.github.io/langgraph/cloud/), offering:
 
-### Key Features
-
-- **Full Compatibility**: Implements the complete `ChatCoreAdapter` interface from `@pressw/threads`
-- **Thread Persistence**: Automatic thread state persistence in LangGraph Cloud
-- **Metadata Support**: Rich metadata attachment for thread organization and filtering
-- **Access Control**: Built-in support for multi-tenant access control
-- **Type Safety**: Full TypeScript support with comprehensive type definitions
-- **Streaming Support**: Compatible with LangGraph's real-time streaming capabilities
+- ☁️ **Managed Storage** - No database to maintain
+- 🚀 **Built-in Scalability** - Handles growth automatically
+- 🤖 **Assistant Integration** - Native LangGraph assistant support
+- 🔄 **Real-time Sync** - Cloud-based thread synchronization
+- 📊 **Analytics Ready** - Built-in metrics and monitoring
+- 🔐 **Enterprise Security** - SOC2 compliant infrastructure
 
 ## Installation
 
 ```bash
-npm install @pressw/threads-langgraph @pressw/threads
-# or
-yarn add @pressw/threads-langgraph @pressw/threads
-# or
-bun add @pressw/threads-langgraph @pressw/threads
+npm install @pressw/threads @pressw/threads-langgraph @langchain/langgraph-sdk
 ```
-
-### Prerequisites
-
-- Node.js 18 or higher
-- A LangGraph Cloud deployment or local LangGraph server
-- LangSmith API key for authentication
 
 ## Quick Start
 
-Here's a minimal example to get you started:
+### 1. Get Your LangGraph Cloud Credentials
+
+First, sign up for [LangGraph Cloud](https://smith.langchain.com/) and create an assistant to get your credentials.
+
+### 2. Create the Adapter
 
 ```typescript
-import { createLangGraphAdapter } from '@pressw/threads-langgraph';
-import { ThreadUtilityClient } from '@pressw/threads';
+import { LangGraphAdapter } from '@pressw/threads-langgraph';
 
-// Create the adapter
-const adapter = createLangGraphAdapter({
-  apiUrl: process.env.LANGGRAPH_API_URL!,
-  apiKey: process.env.LANGSMITH_API_KEY!,
+const adapter = new LangGraphAdapter({
+  apiUrl: 'https://api.langsmith.com',
+  apiKey: process.env.LANGGRAPH_API_KEY!,
+  assistantId: 'your-assistant-id',
 });
+```
 
-// Initialize the thread client
-const threadClient = new ThreadUtilityClient(adapter, async (request) => ({
-  userId: 'user-123',
-  organizationId: 'org-456',
-}));
+### 3. Use with Thread Client
+
+```typescript
+import { createThreadUtilityClient } from '@pressw/threads';
+
+const threadClient = createThreadUtilityClient({
+  adapter,
+  getUserContext: async (request) => {
+    // Your auth logic
+    const session = await getSession(request);
+    return {
+      userId: session.userId,
+      organizationId: session.organizationId,
+    };
+  },
+});
 
 // Create a thread
 const thread = await threadClient.createThread(request, {
   title: 'Customer Support Chat',
-  metadata: { priority: 'high' },
-});
-```
-
-## Architecture
-
-The LangGraph adapter follows a layered architecture:
-
-```mermaid
-graph TD
-    A[Your Application] --> B[ThreadUtilityClient]
-    B --> C[LangGraphAdapter]
-    C --> D[LangGraph SDK Client]
-    D --> E[LangGraph Cloud API]
-
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style C fill:#bbf,stroke:#333,stroke-width:2px
-    style E fill:#bfb,stroke:#333,stroke-width:2px
-```
-
-### Adapter Pattern
-
-The adapter implements the standard `ChatCoreAdapter` interface, providing these core operations:
-
-- **create**: Create new threads with metadata
-- **findOne**: Retrieve a specific thread by ID
-- **findMany**: Search and list threads with filtering
-- **update**: Update thread metadata and properties
-- **delete**: Remove threads with access control
-- **count**: Get the number of threads matching criteria
-
-## Use Cases
-
-### 1. Customer Support Systems
-
-Build sophisticated support chat systems with conversation history and context persistence:
-
-```typescript
-const supportThread = await threadClient.createThread(request, {
-  title: 'Technical Support Request',
   metadata: {
-    category: 'billing',
-    priority: 'urgent',
-    customerId: 'cust-789',
+    source: 'web',
+    priority: 'high',
   },
 });
 ```
 
-### 2. AI Assistant Applications
+## Configuration
 
-Create persistent AI assistant conversations that maintain context across sessions:
+### Basic Configuration
 
 ```typescript
-const assistantThread = await threadClient.createThread(request, {
-  title: 'Code Review Assistant',
-  metadata: {
-    projectId: 'proj-123',
-    language: 'typescript',
-    framework: 'react',
+const adapter = new LangGraphAdapter({
+  apiUrl: 'https://api.langsmith.com',
+  apiKey: process.env.LANGGRAPH_API_KEY!,
+  assistantId: 'your-assistant-id',
+});
+```
+
+### Advanced Configuration
+
+```typescript
+const adapter = new LangGraphAdapter({
+  // Required
+  apiUrl: 'https://api.langsmith.com',
+  apiKey: process.env.LANGGRAPH_API_KEY!,
+  assistantId: 'your-assistant-id',
+
+  // Optional
+  defaultThreadConfig: {
+    // Default configuration for new threads
+    configurable: {
+      model_name: 'gpt-4',
+      temperature: 0.7,
+    },
+  },
+
+  // HTTP client options
+  httpOptions: {
+    timeout: 30000, // 30 seconds
+    retries: 3,
+  },
+
+  // Custom headers
+  headers: {
+    'X-Custom-Header': 'value',
   },
 });
 ```
 
-### 3. Multi-tenant SaaS Applications
+## LangGraph Cloud Integration
 
-Leverage built-in tenant isolation for secure, multi-tenant applications:
+### Working with Assistants
 
-```typescript
-const tenantThread = await threadClient.createThread(request, {
-  title: 'Team Collaboration',
-  metadata: {
-    teamId: 'team-456',
-    workspace: 'engineering',
-  },
-});
-```
-
-## Integration with LangGraph Features
-
-While this adapter focuses on thread management, it's designed to work seamlessly with LangGraph's broader ecosystem:
-
-### Running Assistants
-
-After creating threads with this adapter, you can run LangGraph assistants:
+The adapter seamlessly integrates with LangGraph assistants:
 
 ```typescript
-// Create thread with adapter
+// Create a thread connected to your assistant
 const thread = await threadClient.createThread(request, {
   title: 'AI Assistant Chat',
+  metadata: {
+    assistantVersion: '1.0',
+    features: ['rag', 'tools'],
+  },
 });
 
-// Use LangGraph SDK directly for runs
-const client = new Client({ apiUrl, apiKey });
-const stream = client.runs.stream(
-  thread.id,
-  'assistant-id',
-  { input: { messages: [...] } }
+// The thread ID can be used with LangGraph SDK
+import { Client } from '@langchain/langgraph-sdk';
+
+const langGraphClient = new Client({
+  apiUrl: 'https://api.langsmith.com',
+  apiKey: process.env.LANGGRAPH_API_KEY!,
+});
+
+// Use the same thread ID
+const run = await langGraphClient.runs.create(
+  thread.id, // Thread ID from our adapter
+  'your-assistant-id',
+  { input: { message: 'Hello!' } },
 );
 ```
 
 ### Thread State Management
 
-Access thread state and history using the adapter's thread IDs:
+LangGraph threads maintain state that can be accessed:
 
 ```typescript
-// Get thread with adapter
+// Get thread with state
 const thread = await threadClient.getThread(request, threadId);
 
-// Access state with LangGraph SDK
-const state = await client.threads.getState(thread.id);
-const history = await client.threads.getHistory(thread.id);
+// Access LangGraph state through metadata
+const state = thread.metadata?.state;
+const values = thread.metadata?.values;
 ```
 
-## Configuration
+### Multi-tenant Support
 
-The adapter supports extensive configuration options:
+The adapter supports multi-tenancy through metadata:
 
 ```typescript
-const adapter = createLangGraphAdapter({
-  // Required
-  apiUrl: 'https://your-deployment.langchain.com',
-  apiKey: 'lsv2_pt_...',
+const threadClient = createThreadUtilityClient({
+  adapter,
+  getUserContext: async (request) => ({
+    userId: session.userId,
+    organizationId: session.organizationId,
+    tenantId: session.tenantId, // Stored in metadata
+  }),
+});
 
-  // Optional
-  assistantId: 'my-assistant',
-  defaultHeaders: {
-    'X-Custom-Header': 'value',
+// Threads are automatically filtered by tenant
+const { threads } = await threadClient.listThreads(request);
+```
+
+## Features
+
+### Automatic Thread Management
+
+The adapter handles all thread lifecycle operations:
+
+```typescript
+// Create
+const thread = await threadClient.createThread(request, {
+  title: 'Support Thread',
+});
+
+// Update
+await threadClient.updateThread(request, thread.id, {
+  title: 'Resolved: Support Thread',
+  metadata: {
+    ...thread.metadata,
+    status: 'resolved',
   },
+});
 
-  // Adapter behavior
-  usePlural: false,
-  debugLogs: true,
-  generateId: () => customIdGenerator(),
+// List with filtering
+const { threads } = await threadClient.listThreads(request, {
+  limit: 20,
+  offset: 0,
+  search: 'billing', // Searches in title and metadata
+});
+
+// Delete
+await threadClient.deleteThread(request, thread.id);
+```
+
+### Metadata Storage
+
+Store custom data with threads:
+
+```typescript
+interface CustomMetadata {
+  department: string;
+  priority: 'low' | 'medium' | 'high';
+  tags: string[];
+  customerId: string;
+  resolution?: {
+    resolvedAt: string;
+    resolvedBy: string;
+    solution: string;
+  };
+}
+
+const thread = await threadClient.createThread(request, {
+  title: 'Technical Issue',
+  metadata: {
+    department: 'engineering',
+    priority: 'high',
+    tags: ['bug', 'production'],
+    customerId: 'cust-123',
+  } satisfies CustomMetadata,
 });
 ```
 
-## Best Practices
+### Search Capabilities
 
-### 1. Environment Configuration
+Search across threads:
 
-Store sensitive configuration in environment variables:
+```typescript
+// Search in titles and metadata
+const { threads } = await threadClient.listThreads(request, {
+  search: 'payment error',
+  orderBy: 'createdAt',
+  orderDirection: 'desc',
+});
 
-```bash
-# .env
-LANGGRAPH_API_URL=https://your-deployment.langchain.com
-LANGSMITH_API_KEY=lsv2_pt_your_key_here
+// Filter by user and organization automatically
+// based on getUserContext
 ```
 
-### 2. Error Handling
+### Real-time Updates
 
-Always wrap adapter operations in try-catch blocks:
+Threads are stored in the cloud and updates are immediately available:
+
+```typescript
+// Update in one location
+await threadClient.updateThread(request, threadId, {
+  metadata: { status: 'in-progress' },
+});
+
+// Immediately available elsewhere
+const updated = await threadClient.getThread(request, threadId);
+console.log(updated.metadata.status); // 'in-progress'
+```
+
+## Usage Patterns
+
+### Customer Support System
+
+```typescript
+// Create support thread
+const supportThread = await threadClient.createThread(request, {
+  title: `Support: ${customerIssue.subject}`,
+  metadata: {
+    customerId: customer.id,
+    issueType: customerIssue.type,
+    priority: calculatePriority(customerIssue),
+    assignedAgent: null,
+    status: 'open',
+    sla: {
+      responseTime: '2h',
+      resolutionTime: '24h',
+    },
+  },
+});
+
+// Assign to agent
+await threadClient.updateThread(request, supportThread.id, {
+  metadata: {
+    ...supportThread.metadata,
+    assignedAgent: agentId,
+    status: 'assigned',
+    assignedAt: new Date().toISOString(),
+  },
+});
+```
+
+### AI Assistant Conversations
+
+```typescript
+// Create AI conversation thread
+const aiThread = await threadClient.createThread(request, {
+  title: 'AI Assistant Session',
+  metadata: {
+    model: 'gpt-4',
+    systemPrompt: 'You are a helpful assistant...',
+    maxTokens: 2000,
+    temperature: 0.7,
+    tools: ['web_search', 'calculator'],
+  },
+});
+
+// Track conversation metrics
+await threadClient.updateThread(request, aiThread.id, {
+  metadata: {
+    ...aiThread.metadata,
+    metrics: {
+      messageCount: 10,
+      tokensUsed: 1500,
+      toolCalls: 3,
+      duration: 300, // seconds
+    },
+  },
+});
+```
+
+### Project Collaboration
+
+```typescript
+// Create project thread
+const projectThread = await threadClient.createThread(request, {
+  title: project.name,
+  metadata: {
+    projectId: project.id,
+    team: project.teamMembers,
+    milestone: project.currentMilestone,
+    dueDate: project.deadline,
+    labels: project.labels,
+    visibility: 'team', // or 'private', 'organization'
+  },
+});
+```
+
+## Error Handling
+
+The adapter provides detailed error information:
 
 ```typescript
 try {
-  const thread = await threadClient.createThread(request, data);
+  await threadClient.createThread(request, data);
 } catch (error) {
-  if (error.message.includes('not found')) {
-    // Handle not found errors
+  if (error.code === 'LANGGRAPH_AUTH_ERROR') {
+    // Invalid API key or unauthorized
+  } else if (error.code === 'LANGGRAPH_NOT_FOUND') {
+    // Assistant not found
+  } else if (error.code === 'RATE_LIMIT_EXCEEDED') {
+    // Too many requests
   } else {
-    // Handle other errors
+    // Other errors
   }
 }
 ```
 
-### 3. Metadata Design
+## Performance Considerations
 
-Design your metadata schema for efficient filtering:
+### Caching
+
+The adapter doesn't cache by default. Implement caching at the application level:
 
 ```typescript
-interface ThreadMetadata {
-  // Searchable fields
-  userId: string;
-  status: 'active' | 'resolved' | 'archived';
+import { LRUCache } from 'lru-cache';
 
-  // Descriptive fields
-  tags: string[];
-  context: Record<string, any>;
+const threadCache = new LRUCache<string, Thread>({
+  max: 500,
+  ttl: 1000 * 60 * 5, // 5 minutes
+});
+
+// Wrap thread client methods
+async function getCachedThread(threadId: string) {
+  const cached = threadCache.get(threadId);
+  if (cached) return cached;
+
+  const thread = await threadClient.getThread(request, threadId);
+  if (thread) threadCache.set(threadId, thread);
+  return thread;
 }
 ```
 
+### Batch Operations
+
+For bulk operations, consider batching:
+
+```typescript
+// Instead of individual creates
+for (const data of threadsData) {
+  await threadClient.createThread(request, data);
+}
+
+// Consider parallel execution
+await Promise.all(threadsData.map((data) => threadClient.createThread(request, data)));
+```
+
+### Rate Limiting
+
+Respect LangGraph Cloud rate limits:
+
+```typescript
+import pLimit from 'p-limit';
+
+// Limit concurrent requests
+const limit = pLimit(5);
+
+const threads = await Promise.all(
+  threadIds.map((id) => limit(() => threadClient.getThread(request, id))),
+);
+```
+
+## Migration Guide
+
+### From Local Database
+
+```typescript
+// Export from local database
+const localThreads = await db.select().from(threads);
+
+// Import to LangGraph Cloud
+for (const thread of localThreads) {
+  await adapter.create({
+    model: 'thread',
+    data: {
+      id: thread.id, // Preserve IDs if needed
+      title: thread.title,
+      userId: thread.userId,
+      organizationId: thread.organizationId,
+      metadata: {
+        ...thread.metadata,
+        migratedFrom: 'local-db',
+        migratedAt: new Date().toISOString(),
+      },
+      createdAt: thread.createdAt,
+      updatedAt: thread.updatedAt,
+    },
+  });
+}
+```
+
+### From Other Cloud Services
+
+```typescript
+// Map from other service format
+const mappedThread = {
+  title: otherService.thread.name,
+  userId: otherService.thread.ownerId,
+  metadata: {
+    originalId: otherService.thread.id,
+    originalService: 'other-cloud',
+    ...otherService.thread.properties,
+  },
+};
+
+await threadClient.createThread(request, mappedThread);
+```
+
+## Best Practices
+
+### 1. Use Metadata Effectively
+
+```typescript
+// Good: Structured metadata
+metadata: {
+  category: 'support',
+  subcategory: 'billing',
+  tags: ['urgent', 'customer'],
+  internal: {
+    notes: 'Escalated by manager',
+    previousTickets: ['T-123', 'T-456'],
+  },
+}
+
+// Avoid: Unstructured data
+metadata: {
+  data: 'support billing urgent', // Hard to query
+}
+```
+
+### 2. Handle Network Failures
+
+```typescript
+import { retry } from '@lifeomic/attempt';
+
+async function resilientCreateThread(data: CreateThreadData) {
+  return retry(async () => threadClient.createThread(request, data), {
+    maxAttempts: 3,
+    delay: 1000,
+    factor: 2,
+    handleError: (error, context) => {
+      console.log(`Attempt ${context.attemptNum} failed:`, error);
+    },
+  });
+}
+```
+
+### 3. Monitor Usage
+
+```typescript
+// Track API usage
+let apiCalls = 0;
+
+const monitoredAdapter = new Proxy(adapter, {
+  get(target, prop) {
+    if (typeof target[prop] === 'function') {
+      return async (...args) => {
+        apiCalls++;
+        console.log(`API call: ${prop}, Total: ${apiCalls}`);
+        return target[prop](...args);
+      };
+    }
+    return target[prop];
+  },
+});
+```
+
+## Limitations
+
+- **Search**: Limited to basic text search in title and metadata
+- **Filtering**: No complex query operators like SQL
+- **Bulk Operations**: No native batch API
+- **Transactions**: No transaction support
+- **Real-time**: No WebSocket/subscription support
+
 ## Next Steps
 
-- Explore the [API Reference](./api) for detailed method documentation
-- Check out [Usage Examples](./examples) for common patterns
-- Read the [Integration Guide](./guides/integration) for advanced use cases
-- Learn about [Migration](./guides/migration) from other thread systems
-
-## Support
-
-For issues and questions:
-
-- [GitHub Issues](https://github.com/pressw/ai-dev-tooling/issues)
-- [API Documentation](./api)
-- [LangGraph Cloud Docs](https://langchain-ai.github.io/langgraph/cloud/)
+- Review the [API Reference](./api.md) for detailed method documentation
+- See [Examples](./examples.md) for real-world usage patterns
+- Learn about [Integration Patterns](./guides/integration.md)
+- Explore [Migration Guide](./guides/migration.md)

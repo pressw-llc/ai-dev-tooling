@@ -134,7 +134,18 @@ function ThreadItem({
   onUpdate,
   onDelete,
 }: {
-  thread: any;
+  thread: {
+    id: string;
+    title?: string;
+    createdAt: string | Date;
+    updatedAt: string | Date;
+    metadata?: {
+      type?: string;
+      priority?: string;
+      resolved?: boolean;
+      notes?: Array<{ content: string; createdAt: string }>;
+    };
+  };
   onUpdate: () => void;
   onDelete: () => void;
 }) {
@@ -200,12 +211,14 @@ export function ThreadDetailView({ threadId }: { threadId: string }) {
 
       <div className="notes">
         <h3>Notes</h3>
-        {thread.metadata?.notes?.map((note: any, index: number) => (
-          <div key={index}>
-            <p>{note.content}</p>
-            <small>{new Date(note.createdAt).toLocaleString()}</small>
-          </div>
-        ))}
+        {thread.metadata?.notes?.map(
+          (note: { content: string; createdAt: string }, index: number) => (
+            <div key={index}>
+              <p>{note.content}</p>
+              <small>{new Date(note.createdAt).toLocaleString()}</small>
+            </div>
+          ),
+        )}
 
         <button
           onClick={() => {

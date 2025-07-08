@@ -498,5 +498,3 @@ process.on('SIGTERM', async () => {
 ## Next Steps
 
 - Review the [Migration Guide](./migration) for moving from other systems
-- Explore [Advanced Patterns](./advanced-patterns) for complex use cases
-- Check out the [Troubleshooting Guide](./troubleshooting) for common issues

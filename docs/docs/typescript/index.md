@@ -150,9 +150,8 @@ The core thread management functionality works with any JavaScript framework, wh
 
 ## Migration Guides
 
-- [Migrating from monolithic to adapter pattern](./threads/guides/migration.md)
-- [Switching database adapters](./threads-drizzle/guides/switching-adapters.md)
 - [Moving to LangGraph Cloud](./threads-langgraph/guides/migration.md)
+- [Drizzle Adapter Migration](./threads-drizzle/guides/migration.md)
 
 ## Next Steps
 

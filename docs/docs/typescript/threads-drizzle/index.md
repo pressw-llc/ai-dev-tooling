@@ -461,9 +461,9 @@ See the [API documentation](./api.md) for detailed method signatures and options
 ## Examples
 
 - [Basic Setup](./examples.md#basic-setup)
-- [Multi-tenant App](./examples.md#multi-tenant)
+- [Multi-tenant App](./examples.md#multi-tenant-application)
 - [Custom Field Mapping](./examples.md#field-mapping)
-- [Performance Optimization](./examples.md#performance)
+- [Performance Optimization](./examples.md#performance-optimization)
 
 ## Next Steps
 

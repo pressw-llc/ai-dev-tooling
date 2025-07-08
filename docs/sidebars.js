@@ -20,6 +20,7 @@ const sidebars = {
       label: 'TypeScript',
       items: [
         'typescript/index',
+        'typescript/integration-guide',
         {
           type: 'category',
           label: 'Threads',

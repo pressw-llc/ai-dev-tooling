@@ -347,7 +347,6 @@ Official adapters maintained by the PressW team:
 - [Thread Client API](./api.md) - Complete API documentation
 - [React Hooks API](./react-hooks.md) - React integration guide
 - [Adapter Interface](./adapters.md) - Creating custom adapters
-- [Type Definitions](./types.md) - TypeScript types and interfaces
 
 ## Best Practices
 
@@ -392,10 +391,6 @@ const results = await threadClient.listThreads(request, {
   search: 'customer issue',
 });
 ```
-
-## Migration Guide
-
-Migrating from the monolithic version? See our [migration guide](./guides/migration.md).
 
 ## Next Steps
 

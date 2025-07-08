@@ -13,6 +13,7 @@ import {
   ne,
   or,
   SQL,
+  AnyColumn,
 } from 'drizzle-orm';
 import { BaseAdapter } from '@pressw/threads';
 import type { AdapterConfig, Where, CleanedWhere, SortBy, DatabaseProvider } from '@pressw/threads';
@@ -218,30 +219,30 @@ export class DrizzleAdapter extends BaseAdapter {
 
     switch (where.operator) {
       case 'eq':
-        return eq(field as any, where.value);
+        return eq(field as AnyColumn, where.value);
       case 'ne':
-        return ne(field as any, where.value);
+        return ne(field as AnyColumn, where.value);
       case 'gt':
-        return gt(field as any, where.value);
+        return gt(field as AnyColumn, where.value);
       case 'gte':
-        return gte(field as any, where.value);
+        return gte(field as AnyColumn, where.value);
       case 'lt':
-        return lt(field as any, where.value);
+        return lt(field as AnyColumn, where.value);
       case 'lte':
-        return lte(field as any, where.value);
+        return lte(field as AnyColumn, where.value);
       case 'in':
         if (!Array.isArray(where.value)) {
           throw new Error("Value must be an array for 'in' operator");
         }
-        return inArray(field as any, where.value);
+        return inArray(field as AnyColumn, where.value as (string | number | boolean | null)[]);
       case 'contains':
-        return like(field as any, `%${where.value}%`);
+        return like(field as AnyColumn, `%${where.value}%`);
       case 'starts_with':
-        return like(field as any, `${where.value}%`);
+        return like(field as AnyColumn, `${where.value}%`);
       case 'ends_with':
-        return like(field as any, `%${where.value}`);
+        return like(field as AnyColumn, `%${where.value}`);
       default:
-        return eq(field as any, where.value);
+        return eq(field as AnyColumn, where.value);
     }
   }
 
@@ -366,7 +367,18 @@ export class DrizzleAdapter extends BaseAdapter {
     const table = this.getSchemaTable(params.model);
     const transformedData = this.transformModelInput(params.data, params.model);
 
-    const builder = (this.db as any).insert(table).values(transformedData);
+    const builder = (
+      this.db as DrizzleDB & {
+        insert: (table: unknown) => {
+          values: (data: unknown) => {
+            returning?: () => Promise<unknown[]>;
+            execute: () => Promise<unknown>;
+          };
+        };
+      }
+    )
+      .insert(table)
+      .values(transformedData);
     return await this.withReturning(params.model, builder, transformedData);
   }
 
@@ -381,13 +393,23 @@ export class DrizzleAdapter extends BaseAdapter {
       params.model,
     );
 
-    const result = await (this.db as any)
+    const result = await (
+      this.db as DrizzleDB & {
+        select: () => {
+          from: (table: unknown) => {
+            where: (...args: SQL<unknown>[]) => { limit: (n: number) => Promise<unknown[]> };
+          };
+        };
+      }
+    )
       .select()
       .from(table)
       .where(...whereClause)
       .limit(1);
 
-    return result.length ? (this.transformModelOutput(result[0], params.model) as T) : null;
+    return result.length
+      ? (this.transformModelOutput(result[0] as Record<string, unknown>, params.model) as T)
+      : null;
   }
 
   private cleanModelWhereClause(where: Where[]): CleanedWhere[] {
@@ -411,7 +433,22 @@ export class DrizzleAdapter extends BaseAdapter {
       ? this.buildWhereClause(this.cleanModelWhereClause(params.where), params.model)
       : [];
 
-    let builder = (this.db as any)
+    let builder = (
+      this.db as DrizzleDB & {
+        select: () => {
+          from: (table: unknown) => {
+            limit: (n: number) => {
+              offset: (n: number) => {
+                where: (...args: SQL<unknown>[]) => Promise<unknown[]>;
+                orderBy?: (col: SQL<unknown>) => {
+                  where: (...args: SQL<unknown>[]) => Promise<unknown[]>;
+                };
+              };
+            };
+          };
+        };
+      }
+    )
       .select()
       .from(table)
       .limit(params.limit || 100)
@@ -419,8 +456,8 @@ export class DrizzleAdapter extends BaseAdapter {
 
     if (params.sortBy) {
       const sortFieldName = this.getModelFieldName(params.model, params.sortBy.field);
-      const sortField = (table as any)[sortFieldName];
-      if (sortField) {
+      const sortField = (table as Record<string, AnyColumn>)[sortFieldName];
+      if (sortField && builder.orderBy) {
         const sortFn = params.sortBy.direction === 'desc' ? desc : asc;
         builder = builder.orderBy(sortFn(sortField));
       }
@@ -443,7 +480,18 @@ export class DrizzleAdapter extends BaseAdapter {
       params.model,
     );
 
-    const builder = (this.db as any)
+    const builder = (
+      this.db as DrizzleDB & {
+        update: (table: unknown) => {
+          set: (data: unknown) => {
+            where: (...args: SQL<unknown>[]) => {
+              returning?: () => Promise<unknown[]>;
+              execute: () => Promise<unknown>;
+            };
+          };
+        };
+      }
+    )
       .update(table)
       .set(transformedData)
       .where(...whereClause);
@@ -458,7 +506,13 @@ export class DrizzleAdapter extends BaseAdapter {
       params.model,
     );
 
-    await (this.db as any).delete(table).where(...whereClause);
+    await (
+      this.db as DrizzleDB & {
+        delete: (table: unknown) => { where: (...args: SQL<unknown>[]) => Promise<void> };
+      }
+    )
+      .delete(table)
+      .where(...whereClause);
   }
 
   async count(params: { model: string; where?: Where[] }): Promise<number> {
@@ -467,7 +521,15 @@ export class DrizzleAdapter extends BaseAdapter {
       ? this.buildWhereClause(this.cleanModelWhereClause(params.where), params.model)
       : [];
 
-    const result = await (this.db as any)
+    const result = await (
+      this.db as DrizzleDB & {
+        select: (fields: { count: SQL<number> }) => {
+          from: (table: unknown) => {
+            where: (...args: SQL<unknown>[]) => Promise<{ count: number }[]>;
+          };
+        };
+      }
+    )
       .select({ count: count() })
       .from(table)
       .where(...whereClause);

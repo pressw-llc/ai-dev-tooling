@@ -480,5 +480,5 @@ export function ThreadListPage() {
 - [Authentication Guide](./guides/authentication) - Implementing authentication
 - [Server Components](./guides/server-components) - Using with Server Components
 - [Examples](./examples) - Real-world implementation examples
-- [Thread Management](../threads/overview) - Learn about core thread functionality
+- [Thread Management](../threads/index.md) - Learn about core thread functionality
 - [Database Adapters](../threads/adapters) - Set up database integration

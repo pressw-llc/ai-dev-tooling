@@ -184,21 +184,25 @@ export function getSchemas(provider: DatabaseProvider) {
 }
 
 // Helper functions for creating tables with any table function
-export function usersTable(tableFunction: any) {
+export function usersTable(tableFunction: typeof pgTable | typeof mysqlTable | typeof sqliteTable) {
   if (tableFunction === pgTable) return pgUsers;
   if (tableFunction === mysqlTable) return mysqlUsers;
   if (tableFunction === sqliteTable) return sqliteUsers;
   throw new Error('Unknown table function');
 }
 
-export function threadsTable(tableFunction: any) {
+export function threadsTable(
+  tableFunction: typeof pgTable | typeof mysqlTable | typeof sqliteTable,
+) {
   if (tableFunction === pgTable) return pgThreads;
   if (tableFunction === mysqlTable) return mysqlThreads;
   if (tableFunction === sqliteTable) return sqliteThreads;
   throw new Error('Unknown table function');
 }
 
-export function feedbackTable(tableFunction: any) {
+export function feedbackTable(
+  tableFunction: typeof pgTable | typeof mysqlTable | typeof sqliteTable,
+) {
   if (tableFunction === pgTable) return pgFeedback;
   if (tableFunction === mysqlTable) return mysqlFeedback;
   if (tableFunction === sqliteTable) return sqliteFeedback;

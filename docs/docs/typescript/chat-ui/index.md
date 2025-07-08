@@ -368,11 +368,9 @@ function ThreadChat({ threadId }: { threadId: string }) {
 
 ## API Reference
 
-For detailed API documentation, see the [API Reference](./api.md).
+For detailed API documentation, see the [Components Reference](./components.md).
 
 ## Next Steps
 
 - Explore [component examples](./examples.md)
-- Learn about [theming](./guides/theming.md)
-- Set up [real-time updates](./guides/realtime.md)
-- Implement [file uploads](./guides/file-uploads.md)
+- Learn about [theming](./theming.md)
