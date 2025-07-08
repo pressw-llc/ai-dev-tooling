@@ -19,6 +19,7 @@ const sidebars = {
       type: 'category',
       label: 'TypeScript',
       items: [
+        'typescript/index',
         {
           type: 'category',
           label: 'Threads',
@@ -28,6 +29,26 @@ const sidebars = {
             'typescript/threads/react-hooks',
             'typescript/threads/adapters',
             'typescript/threads/examples',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Threads Drizzle',
+          items: [
+            'typescript/threads-drizzle/index',
+            'typescript/threads-drizzle/api',
+            'typescript/threads-drizzle/examples',
+            {
+              type: 'category',
+              label: 'Guides',
+              items: [
+                'typescript/threads-drizzle/guides/advanced-queries',
+                'typescript/threads-drizzle/guides/performance',
+                'typescript/threads-drizzle/guides/field-mapping',
+                'typescript/threads-drizzle/guides/migration',
+                'typescript/threads-drizzle/guides/troubleshooting',
+              ],
+            },
           ],
         },
         {
@@ -45,6 +66,16 @@ const sidebars = {
                 'typescript/threads-langgraph/guides/migration',
               ],
             },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Chat UI',
+          items: [
+            'typescript/chat-ui/index',
+            'typescript/chat-ui/components',
+            'typescript/chat-ui/theming',
+            'typescript/chat-ui/examples',
           ],
         },
         {

@@ -106,7 +106,7 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
         };
 
         return this.transformOutput(result) as T;
-      } catch (error) {
+      } catch {
         // Thread not found
         return null;
       }
@@ -122,7 +122,7 @@ export class LangGraphAdapter extends BaseAdapter implements ChatCoreAdapter {
     offset?: number;
     sortBy?: SortBy;
   }): Promise<T[]> {
-    const { model, where, limit = 20, offset = 0, sortBy } = params;
+    const { model, where, limit = 20, offset = 0 } = params;
 
     if (model === 'thread') {
       // Build metadata filter from where conditions

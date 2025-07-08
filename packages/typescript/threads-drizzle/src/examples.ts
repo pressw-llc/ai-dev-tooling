@@ -7,9 +7,8 @@
 
 // import { drizzle } from 'drizzle-orm/postgres-js';
 // import postgres from 'postgres';
-import { DrizzleAdapter, createCatchAllThreadRouteHandler } from './index';
-import type { ThreadRouteConfig, UserContext, DrizzleAdapterConfig } from './index';
-import type { DrizzleDB } from '../adapters/drizzle-adapter';
+import { DrizzleAdapter } from './index';
+import type { DrizzleAdapterConfig, DrizzleDB } from './index';
 
 // ==========================================
 // 1. DATABASE SETUP EXAMPLE
@@ -50,13 +49,13 @@ export function setupDatabase() {
 // ==========================================
 
 /**
- * Example Next.js API route setup for /api/chat/[...route]/route.ts
+ * Example Next.js API route setup using ThreadUtilityClient
  */
-export function createNextJSApiRoute() {
-  const { adapter } = setupDatabase();
-
-  // Define how to get user context from the request
-  const getUserContext = async (request: Request): Promise<UserContext> => {
+export function createThreadUtilityExample() {
+  // Example of using ThreadUtilityClient from @pressw/threads
+  return `
+// Define how to get user context from the request
+const getUserContext = async (request: Request): Promise<UserContext> => {
     // Example: Extract from JWT token in Authorization header
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
@@ -73,25 +72,26 @@ export function createNextJSApiRoute() {
       tenantId: decoded.tenantId,
     };
   };
+import { createThreadUtilityClient } from '@pressw/threads';
 
-  // Create the route configuration
-  const config: ThreadRouteConfig = {
-    adapter,
-    getUserContext,
-  };
+const threadClient = createThreadUtilityClient({
+  adapter,
+  getUserContext,
+});
 
-  // Return the catch-all handler
-  return createCatchAllThreadRouteHandler(config);
+// Use in your API routes
+export async function GET(request: Request) {
+  const threads = await threadClient.listThreads(request);
+  return Response.json(threads);
 }
 
-// Example route file: /api/chat/[...route]/route.ts
-export const exampleRouteFile = `
-import { createNextJSApiRoute } from './path/to/your/setup';
-
-const handler = createNextJSApiRoute();
-
-export { handler as GET, handler as POST, handler as PUT, handler as DELETE };
+export async function POST(request: Request) {
+  const body = await request.json();
+  const thread = await threadClient.createThread(request, body);
+  return Response.json(thread);
+}
 `;
+}
 
 // ==========================================
 // 3. REACT CLIENT SETUP EXAMPLE
@@ -344,8 +344,4 @@ async function getUserContextFromClerk(request: Request): Promise<UserContext> {
 }
 `;
 
-// Mock function for example
-function verifyJWT(_token: string): { userId: string; organizationId?: string; tenantId?: string } {
-  // Your JWT verification logic
-  return { userId: 'user-123', organizationId: 'org-456', tenantId: 'tenant-789' };
-}
+// Mock function for example - included as part of the examples string above

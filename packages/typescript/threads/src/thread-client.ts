@@ -1,4 +1,4 @@
-import type { ChatCoreAdapter } from './adapters/types';
+import type { ChatCoreAdapter, Where } from './adapters/types';
 import type {
   UserContext,
   CreateThreadOptions,
@@ -10,8 +10,8 @@ import type {
 import type { Thread } from './schema';
 
 // Helper functions for thread operations (moved from route handlers)
-function buildTenantWhereConditions(userContext: UserContext) {
-  const conditions = [{ field: 'userId', value: userContext.userId }];
+function buildTenantWhereConditions(userContext: UserContext): Where[] {
+  const conditions: Where[] = [{ field: 'userId', value: userContext.userId }];
 
   if (userContext.organizationId) {
     conditions.push({ field: 'organizationId', value: userContext.organizationId });
@@ -39,18 +39,22 @@ export class ThreadUtilityClient {
   }
 
   async createThread(request: Request, options: CreateThreadOptions = {}): Promise<Thread> {
-    return this.withUserContext(request, (userContext) =>
-      this.adapter.create<Thread>({
+    return this.withUserContext(request, async (userContext) => {
+      const result = await this.adapter.create<Thread>({
         model: 'thread',
         data: {
+          id: crypto.randomUUID(),
           title: options.title,
           userId: userContext.userId,
-          organizationId: userContext.organizationId,
-          tenantId: userContext.tenantId,
+          organizationId: userContext.organizationId ?? undefined,
+          tenantId: userContext.tenantId ?? undefined,
           metadata: options.metadata,
-        } as Parameters<ChatCoreAdapter['create']>[0]['data'],
-      }),
-    );
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+      return result;
+    });
   }
 
   async updateThread(

@@ -29,35 +29,45 @@ Our Python SDK provides:
 
 ### TypeScript SDKs
 
-#### `@pressw/threads`
+Our TypeScript packages follow a modular architecture with clear separation of concerns:
 
-Flexible thread management library for building:
+#### Core Package
 
-- Conversational interfaces
-- Support ticket systems
-- Task management
-- Discussion forums
-- Any threaded data structure
+##### `@pressw/threads`
 
-Features include:
+The foundation package providing interfaces and React hooks for thread management:
 
-- Thread-first architecture
-- Database agnostic (PostgreSQL, MySQL, SQLite)
-- Multi-tenant support
+- Core thread interfaces and types
 - React hooks with optimistic updates
+- Base adapter pattern for database flexibility
+- Multi-tenant support with user context
 - Full TypeScript support with Zod validation
 
-#### `@pressw/threads-langgraph`
+#### Database Adapters
 
-LangGraph Cloud adapter for thread management:
+##### `@pressw/threads-drizzle`
+
+SQL database adapter for Drizzle ORM:
+
+- Support for PostgreSQL, MySQL, SQLite
+- Field mapping for existing schemas
+- Transaction support
+- Type-safe queries
+- Migration utilities
+
+##### `@pressw/threads-langgraph`
+
+Cloud-native adapter for LangGraph Cloud:
 
 - Seamless integration with LangGraph Cloud
-- Persistent thread state management
-- Built-in conversation history
-- Compatible with LangGraph assistants
+- Managed thread storage
+- Built-in assistant integration
+- No database management required
 - Full compatibility with `@pressw/threads` interface
 
-#### `@pressw/chat-ui`
+#### UI Components
+
+##### `@pressw/chat-ui`
 
 React components for chat interfaces:
 
@@ -65,15 +75,41 @@ React components for chat interfaces:
 - Customizable styling
 - Integration with threads package
 
+##### `@pressw/chat-nextjs`
+
+Next.js integration utilities:
+
+- Server-side thread management
+- API route handlers
+- Authentication helpers
+
 ## Quick Start
 
 Choose your language to get started:
 
-- **Python**: Install with `pip install pw-ai-foundation`
-- **TypeScript**:
-  - Thread management: `bun add @pressw/threads`
-  - LangGraph integration: `bun add @pressw/threads-langgraph`
-  - Chat UI components: `bun add @pressw/chat-ui`
+### Python
+
+```bash
+pip install pw-ai-foundation
+```
+
+### TypeScript
+
+Install the core package and choose your adapter:
+
+```bash
+# Core thread management
+bun add @pressw/threads
+
+# Choose a database adapter:
+bun add @pressw/threads-drizzle drizzle-orm  # For SQL databases
+# OR
+bun add @pressw/threads-langgraph @langchain/langgraph-sdk  # For LangGraph Cloud
+
+# Optional UI components
+bun add @pressw/chat-ui  # React components
+bun add @pressw/chat-nextjs  # Next.js integration
+```
 
 ## Features
 

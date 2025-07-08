@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import type { Message } from '@pressw/threads';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
+
+export interface Message {
+  id: string;
+  content: string;
+  role: 'user' | 'assistant' | 'system';
+  timestamp: Date;
+}
 
 export interface ChatWindowProps {
   onSendMessage: (message: string) => Promise<void>;

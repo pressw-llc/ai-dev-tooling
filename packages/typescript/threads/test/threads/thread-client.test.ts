@@ -43,13 +43,16 @@ describe('ThreadUtilityClient', () => {
       expect(mockGetUserContext).toHaveBeenCalledWith(mockRequest);
       expect(mockAdapter.create).toHaveBeenCalledWith({
         model: 'thread',
-        data: {
+        data: expect.objectContaining({
+          id: expect.any(String),
           title: input.title,
           userId: mockUserContext.userId,
           organizationId: mockUserContext.organizationId,
           tenantId: mockUserContext.tenantId,
           metadata: input.metadata,
-        },
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        }),
       });
       expect(result).toEqual(expectedOutput);
     });
@@ -62,13 +65,16 @@ describe('ThreadUtilityClient', () => {
 
       expect(mockAdapter.create).toHaveBeenCalledWith({
         model: 'thread',
-        data: {
+        data: expect.objectContaining({
+          id: expect.any(String),
           title: undefined,
           userId: mockUserContext.userId,
           organizationId: mockUserContext.organizationId,
           tenantId: mockUserContext.tenantId,
           metadata: undefined,
-        },
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        }),
       });
       expect(result).toEqual(emptyThread);
     });
@@ -81,13 +87,16 @@ describe('ThreadUtilityClient', () => {
 
       expect(mockAdapter.create).toHaveBeenCalledWith({
         model: 'thread',
-        data: {
+        data: expect.objectContaining({
+          id: expect.any(String),
           title: undefined,
           userId: mockUserContext.userId,
           organizationId: mockUserContext.organizationId,
           tenantId: mockUserContext.tenantId,
           metadata: undefined,
-        },
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        }),
       });
       expect(result).toEqual(defaultThread);
     });
@@ -384,13 +393,16 @@ describe('ThreadUtilityClient', () => {
 
       expect(mockAdapter.create).toHaveBeenCalledWith({
         model: 'thread',
-        data: {
+        data: expect.objectContaining({
+          id: expect.any(String),
           title: undefined,
           userId: customUserContext.userId,
           organizationId: customUserContext.organizationId,
           tenantId: customUserContext.tenantId,
           metadata: undefined,
-        },
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        }),
       });
     });
   });

@@ -220,7 +220,9 @@ export function useCreateThread(options: UseCreateThreadOptions = {}) {
       await queryClient.cancelQueries({ queryKey: threadQueryKeys.lists() });
 
       // Snapshot the previous value
-      const previousThreads = queryClient.getQueriesData({ queryKey: threadQueryKeys.lists() });
+      const previousThreads = queryClient.getQueriesData<ThreadsResponse>({
+        queryKey: threadQueryKeys.lists(),
+      });
 
       // Optimistically update to the new value
       queryClient.setQueriesData<ThreadsResponse>({ queryKey: threadQueryKeys.lists() }, (old) => {
@@ -230,9 +232,9 @@ export function useCreateThread(options: UseCreateThreadOptions = {}) {
           id: `temp-${Date.now()}`,
           title: newThread.title || 'New Thread',
           userId: 'current-user', // This will be set by the server
-          organizationId: null,
-          tenantId: null,
-          metadata: newThread.metadata || null,
+          organizationId: undefined,
+          tenantId: undefined,
+          metadata: newThread.metadata || undefined,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -320,7 +322,7 @@ export function useDeleteThread(options: UseDeleteThreadOptions = {}) {
 
       // Snapshot the previous values
       const previousThread = queryClient.getQueryData<Thread>(threadQueryKeys.detail(id));
-      const previousThreadsQueries = queryClient.getQueriesData({
+      const previousThreadsQueries = queryClient.getQueriesData<ThreadsResponse>({
         queryKey: threadQueryKeys.lists(),
       });
 

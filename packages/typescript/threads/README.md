@@ -1,13 +1,24 @@
 # @pressw/threads
 
-A flexible thread management library for modern applications. Build conversation features, task tracking, support tickets, or any threaded data structure with complete control.
+Core thread management library providing the foundation for building conversational applications. This package defines the interfaces and React hooks, while database implementations are provided through adapter packages.
+
+## Architecture
+
+```
+@pressw/threads (this package)
+  ├── Core interfaces & types
+  ├── React hooks
+  └── Base adapter class
+      ├── @pressw/threads-drizzle → SQL databases
+      └── @pressw/threads-langgraph → Cloud storage
+```
 
 ## Why @pressw/threads?
 
 `@pressw/threads` provides a robust foundation for managing threaded data structures in your applications:
 
 - 🎯 **Thread-First**: Purpose-built for managing conversational threads
-- 🗄️ **Database Agnostic**: PostgreSQL, MySQL, SQLite support out of the box
+- 🗄️ **Database Agnostic**: Adapter pattern supports any database backend
 - 🏢 **Multi-tenant Ready**: Built-in user, organization, and tenant isolation
 - ⚛️ **React Optimized**: Hooks with optimistic updates and caching
 - 🔒 **Type-Safe**: Full TypeScript support with runtime validation
@@ -17,10 +28,11 @@ A flexible thread management library for modern applications. Build conversation
 
 ```bash
 npm install @pressw/threads
-# or
-yarn add @pressw/threads
-# or
-bun add @pressw/threads
+
+# Also install a database adapter
+npm install @pressw/threads-drizzle drizzle-orm
+# OR
+npm install @pressw/threads-langgraph @langchain/langgraph-sdk
 ```
 
 ## Quick Start
@@ -28,7 +40,8 @@ bun add @pressw/threads
 ### 1. Set up ThreadsProvider
 
 ```typescript
-import { ThreadsProvider, createDrizzleAdapter } from '@pressw/threads';
+import { ThreadsProvider } from '@pressw/threads';
+import { createDrizzleAdapter } from '@pressw/threads-drizzle';
 import { drizzle } from 'drizzle-orm/postgres-js';
 
 const db = drizzle(connectionString);
@@ -147,8 +160,10 @@ Implement commenting systems where threads group related comments.
 
 ### Database Support
 
-- Built-in Drizzle ORM adapter
-- Support for PostgreSQL, MySQL, SQLite
+- Adapter pattern for database flexibility
+- Official adapters:
+  - `@pressw/threads-drizzle` - PostgreSQL, MySQL, SQLite via Drizzle ORM
+  - `@pressw/threads-langgraph` - LangGraph Cloud managed storage
 - Easy to create custom adapters
 
 ### Multi-tenancy
@@ -240,6 +255,44 @@ await client.getThread(request, threadId);
 await client.listThreads(request, options);
 await client.deleteThread(request, threadId);
 ```
+
+## Available Adapters
+
+Choose the adapter that fits your infrastructure:
+
+### @pressw/threads-drizzle
+
+SQL database adapter supporting PostgreSQL, MySQL, and SQLite through Drizzle ORM.
+
+```bash
+npm install @pressw/threads-drizzle drizzle-orm
+```
+
+Features:
+
+- Support for PostgreSQL, MySQL, SQLite
+- Field mapping for existing schemas
+- Transaction support
+- Type-safe queries
+
+[Documentation](https://github.com/pressw/ai-dev-tooling/tree/main/packages/typescript/threads-drizzle)
+
+### @pressw/threads-langgraph
+
+Cloud-native adapter for LangGraph Cloud managed storage.
+
+```bash
+npm install @pressw/threads-langgraph @langchain/langgraph-sdk
+```
+
+Features:
+
+- Managed cloud storage
+- Built-in scalability
+- Assistant integration
+- No database management
+
+[Documentation](https://github.com/pressw/ai-dev-tooling/tree/main/packages/typescript/threads-langgraph)
 
 ## Documentation
 

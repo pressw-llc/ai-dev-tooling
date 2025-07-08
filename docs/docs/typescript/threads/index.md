@@ -1,178 +1,253 @@
 ---
 sidebar_position: 1
-title: '@pressw/threads'
 ---
 
 # @pressw/threads
 
-A flexible, type-safe thread management library for building conversational interfaces, support systems, and any threaded data structure.
+Core thread management package providing the foundation for building conversational AI applications. This package defines the interfaces and base implementations used by all adapters.
 
 ## Overview
 
-`@pressw/threads` is a modern TypeScript library that provides a complete solution for managing threaded conversations and hierarchical data structures. Whether you're building a chat application, support ticket system, task manager, or discussion forum, this library offers the flexibility and type safety you need.
+`@pressw/threads` is a **database-agnostic** thread management system that provides:
 
-### Key Features
+- 🎯 **Core Interfaces**: Thread, User, and Feedback types
+- 🔌 **Adapter Pattern**: Pluggable database backends
+- ⚛️ **React Hooks**: Thread management hooks for React applications
+- 🔐 **Multi-tenancy**: Built-in support for user/organization/tenant isolation
+- 📝 **TypeScript First**: Full type safety and IntelliSense support
 
-- 🏗️ **Thread-First Architecture** - Built from the ground up for managing threaded data
-- 🔌 **Database Agnostic** - Support for PostgreSQL, MySQL, and SQLite through adapters
-- 🏢 **Multi-Tenant Ready** - Built-in user, organization, and tenant isolation
-- ⚛️ **React Integration** - Powerful hooks with optimistic updates and caching
-- 🛡️ **Type Safe** - Full TypeScript support with runtime validation via Zod
-- 🎯 **Flexible Metadata** - Store any custom data with your threads
-- 🚀 **Performance Optimized** - Efficient queries with pagination and search
+## Architecture
+
+```mermaid
+graph LR
+    A[Your App] --> B[pressw/threads]
+    B --> C[Adapter Interface]
+    C --> D[pressw/threads-drizzle]
+    C --> E[pressw/threads-langgraph]
+    C --> F[Custom Adapter]
+
+    style B fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ## Installation
 
 ```bash
 npm install @pressw/threads
-# or
-yarn add @pressw/threads
-# or
-pnpm add @pressw/threads
-# or
-bun add @pressw/threads
+
+# You'll also need an adapter
+npm install @pressw/threads-drizzle
+# OR
+npm install @pressw/threads-langgraph
 ```
 
-## Quick Start
+## Core Concepts
 
-### 1. Set Up Your Database
+### Thread Model
 
-First, ensure you have the required database tables. The library expects three tables: `users`, `threads`, and `feedback`.
-
-```sql
--- Example PostgreSQL schema
-CREATE TABLE users (
-  id VARCHAR PRIMARY KEY,
-  email VARCHAR NOT NULL,
-  name VARCHAR,
-  image VARCHAR
-);
-
-CREATE TABLE threads (
-  id VARCHAR PRIMARY KEY,
-  title VARCHAR NOT NULL,
-  user_id VARCHAR NOT NULL REFERENCES users(id),
-  organization_id VARCHAR,
-  tenant_id VARCHAR,
-  metadata JSONB,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE feedback (
-  id VARCHAR PRIMARY KEY,
-  thread_id VARCHAR NOT NULL REFERENCES threads(id),
-  user_id VARCHAR NOT NULL REFERENCES users(id),
-  type VARCHAR NOT NULL,
-  message TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-```
-
-### 2. Configure Your Adapter
-
-Choose and configure a database adapter:
+A thread represents a conversation or interaction session:
 
 ```typescript
-import { createAdapter } from '@pressw/threads/adapters';
+interface Thread {
+  id: string;
+  title?: string;
+  userId: string;
+  organizationId?: string;
+  tenantId?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### User Context
+
+Every operation requires user context for proper isolation:
+
+```typescript
+interface UserContext {
+  userId: string;
+  organizationId?: string | null;
+  tenantId?: string | null;
+}
+```
+
+### Adapter Pattern
+
+The package uses an adapter pattern to support different storage backends:
+
+```typescript
+interface ChatCoreAdapter {
+  create<T>(params: CreateParams): Promise<T>;
+  findOne<T>(params: FindParams): Promise<T | null>;
+  findMany<T>(params: FindManyParams): Promise<T[]>;
+  update<T>(params: UpdateParams): Promise<T | null>;
+  delete(params: DeleteParams): Promise<void>;
+  count(params: CountParams): Promise<number>;
+}
+```
+
+## Basic Usage
+
+### 1. Choose Your Adapter
+
+```typescript
+// For SQL databases with Drizzle ORM
+import { DrizzleAdapter } from '@pressw/threads-drizzle';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
 
-// Create database connection
-const sql = postgres(process.env.DATABASE_URL!);
-const db = drizzle(sql);
-
-// Create adapter with your schema
-const adapter = createAdapter({
-  provider: 'postgresql',
-  db,
-  schema: {
-    users: usersTable,
-    threads: threadsTable,
-    feedback: feedbackTable,
+const db = drizzle(connection);
+const adapter = new DrizzleAdapter(db, {
+  provider: 'postgres',
+  tables: {
+    user: 'users',
+    thread: 'threads',
+    feedback: 'feedback',
   },
+});
+
+// OR for LangGraph Cloud
+import { LangGraphAdapter } from '@pressw/threads-langgraph';
+
+const adapter = new LangGraphAdapter({
+  apiUrl: 'https://api.langsmith.com',
+  apiKey: process.env.LANGGRAPH_API_KEY,
+  assistantId: 'your-assistant-id',
 });
 ```
 
-### 3. Create Thread Client
+### 2. Create Thread Client
 
 ```typescript
-import { ThreadUtilityClient } from '@pressw/threads';
+import { createThreadUtilityClient } from '@pressw/threads';
 
-const threadClient = new ThreadUtilityClient({
+const threadClient = createThreadUtilityClient({
   adapter,
-  getUserContext: async (userId) => {
-    // Return user context for multi-tenancy
+  getUserContext: async (request: Request) => {
+    // Extract user context from request
+    const token = request.headers.get('Authorization');
+    const user = await verifyToken(token);
+
     return {
-      id: userId,
-      organizationId: 'org_123',
-      tenantId: 'tenant_456',
+      userId: user.id,
+      organizationId: user.orgId,
+      tenantId: user.tenantId,
     };
   },
 });
 ```
 
-### 4. Use in Your Application
+### 3. Thread Operations
 
 ```typescript
 // Create a thread
-const thread = await threadClient.createThread(userId, {
-  title: 'Project Discussion',
+const thread = await threadClient.createThread(request, {
+  title: 'Customer Support',
   metadata: {
-    category: 'general',
-    priority: 'normal',
+    category: 'billing',
+    priority: 'high',
   },
 });
 
 // List threads
-const threads = await threadClient.listThreads(userId, {
+const { threads, total, hasMore } = await threadClient.listThreads(request, {
   limit: 20,
-  search: 'project',
+  offset: 0,
+  orderBy: 'updatedAt',
+  orderDirection: 'desc',
 });
 
-// Update thread
-await threadClient.updateThread(userId, threadId, {
-  title: 'Updated Title',
+// Get a specific thread
+const thread = await threadClient.getThread(request, threadId);
+
+// Update a thread
+const updated = await threadClient.updateThread(request, threadId, {
+  title: 'Resolved: Customer Support',
   metadata: {
     ...thread.metadata,
     status: 'resolved',
   },
 });
+
+// Delete a thread
+await threadClient.deleteThread(request, threadId);
 ```
 
-### 5. React Integration
+## React Integration
 
-```tsx
-import { ThreadsProvider, useThreads, useCreateThread } from '@pressw/threads/react';
+### Setup React Query
+
+```typescript
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { setDefaultApiClient, DefaultThreadApiClient } from '@pressw/threads';
+
+const queryClient = new QueryClient();
+
+const apiClient = new DefaultThreadApiClient({
+  baseUrl: '/api/threads',
+  fetchOptions: {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  },
+});
+
+setDefaultApiClient(apiClient);
 
 function App() {
   return (
-    <ThreadsProvider adapter={adapter} userId={currentUserId}>
-      <ThreadList />
-    </ThreadsProvider>
+    <QueryClientProvider client={queryClient}>
+      {/* Your app */}
+    </QueryClientProvider>
   );
 }
+```
+
+### Using Thread Hooks
+
+```typescript
+import {
+  useThreads,
+  useThread,
+  useCreateThread,
+  useUpdateThread,
+  useDeleteThread
+} from '@pressw/threads';
 
 function ThreadList() {
-  const { data: threads, isLoading } = useThreads();
-  const createThread = useCreateThread();
+  // List threads with pagination
+  const { data, isLoading, error } = useThreads({
+    limit: 20,
+    orderBy: 'updatedAt',
+  });
 
-  const handleCreate = async () => {
-    await createThread.mutateAsync({
-      title: 'New Thread',
-      metadata: { type: 'discussion' },
-    });
-  };
+  // Create a new thread
+  const createMutation = useCreateThread({
+    onSuccess: (thread) => {
+      console.log('Created:', thread);
+    },
+  });
+
+  // Update a thread
+  const updateMutation = useUpdateThread();
+
+  // Delete a thread
+  const deleteMutation = useDeleteThread();
 
   if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div>
-      <button onClick={handleCreate}>Create Thread</button>
-      {threads?.map((thread) => (
+      <button onClick={() => createMutation.mutate({ title: 'New Thread' })}>
+        Create Thread
+      </button>
+
+      {data?.threads.map((thread) => (
         <div key={thread.id}>
           <h3>{thread.title}</h3>
-          <p>Created: {thread.createdAt}</p>
+          <button onClick={() => deleteMutation.mutate(thread.id)}>
+            Delete
+          </button>
         </div>
       ))}
     </div>
@@ -180,45 +255,151 @@ function ThreadList() {
 }
 ```
 
-## Core Concepts
+## Creating Custom Adapters
 
-### Threads
+To create a custom adapter for your database:
 
-Threads are the central entity in the library. Each thread has:
+```typescript
+import { BaseAdapter } from '@pressw/threads';
+import type { ChatCoreAdapter, AdapterConfig } from '@pressw/threads';
 
-- Unique identifier
-- Title
-- Owner (userId)
-- Multi-tenant support (organizationId, tenantId)
-- Flexible metadata for custom data
-- Timestamps (createdAt, updatedAt)
+export class CustomAdapter extends BaseAdapter implements ChatCoreAdapter {
+  constructor(
+    private db: YourDatabase,
+    config: AdapterConfig,
+  ) {
+    super(config);
+  }
 
-### Adapters
+  async create<T>(params: CreateParams): Promise<T> {
+    const table = this.getModelName(params.model);
+    const data = this.transformInput(params.data);
 
-Adapters provide the database abstraction layer, allowing the library to work with different database systems. Currently supported:
+    const result = await this.db.insert(table).values(data).returning();
 
-- PostgreSQL (via Drizzle ORM)
-- MySQL (via Drizzle ORM)
-- SQLite (via Drizzle ORM)
+    return this.transformOutput(result[0]) as T;
+  }
 
-### User Context
+  async findOne<T>(params: FindParams): Promise<T | null> {
+    // Implement find logic
+  }
 
-The library uses a user context system for multi-tenant data isolation. Every operation is scoped to the current user's context, ensuring data security and proper access control.
+  // ... implement other required methods
+}
+```
 
-## Use Cases
+## Multi-tenancy Support
 
-`@pressw/threads` is designed to be flexible enough for various applications:
+The library has built-in support for multi-tenant applications:
 
-- **Chat Applications** - Real-time messaging with conversation threads
-- **Support Systems** - Ticket management with customer interactions
-- **Task Management** - Hierarchical task organization
-- **Discussion Forums** - Topic-based discussions with replies
-- **Comment Systems** - Nested comments on articles or posts
-- **Project Management** - Team collaboration threads
+```typescript
+// User context automatically filters data
+const userContext = {
+  userId: 'user-123',
+  organizationId: 'org-456', // Optional
+  tenantId: 'tenant-789', // Optional
+};
+
+// All queries are automatically scoped
+const threads = await threadClient.listThreads(request);
+// Only returns threads for user-123 in org-456 and tenant-789
+```
+
+## TypeScript Support
+
+Full TypeScript support with:
+
+- Type-safe thread operations
+- Auto-completion for metadata fields
+- Compile-time validation
+- Generic type parameters for custom extensions
+
+```typescript
+// Define custom metadata type
+interface CustomMetadata {
+  category: 'support' | 'sales' | 'general';
+  priority: 'low' | 'medium' | 'high';
+  tags: string[];
+}
+
+// Use with type safety
+const thread = await threadClient.createThread<CustomMetadata>(request, {
+  title: 'Support Request',
+  metadata: {
+    category: 'support', // Type-safe!
+    priority: 'high',
+    tags: ['billing', 'urgent'],
+  },
+});
+```
+
+## Available Adapters
+
+Official adapters maintained by the PressW team:
+
+| Adapter       | Package                                                    | Use Case                                  |
+| ------------- | ---------------------------------------------------------- | ----------------------------------------- |
+| **Drizzle**   | [@pressw/threads-drizzle](../threads-drizzle/index.md)     | SQL databases (PostgreSQL, MySQL, SQLite) |
+| **LangGraph** | [@pressw/threads-langgraph](../threads-langgraph/index.md) | LangGraph Cloud managed storage           |
+
+## API Reference
+
+- [Thread Client API](./api.md) - Complete API documentation
+- [React Hooks API](./react-hooks.md) - React integration guide
+- [Adapter Interface](./adapters.md) - Creating custom adapters
+- [Type Definitions](./types.md) - TypeScript types and interfaces
+
+## Best Practices
+
+### 1. **Always Provide User Context**
+
+```typescript
+// ✅ Good - provides user context
+await threadClient.createThread(request, data);
+
+// ❌ Bad - no user context
+await adapter.create({ model: 'thread', data });
+```
+
+### 2. **Use TypeScript**
+
+The package is designed with TypeScript in mind for the best experience.
+
+### 3. **Handle Errors Gracefully**
+
+```typescript
+try {
+  const thread = await threadClient.createThread(request, data);
+} catch (error) {
+  if (error.code === 'UNAUTHORIZED') {
+    // Handle auth error
+  }
+  // Handle other errors
+}
+```
+
+### 4. **Optimize Queries**
+
+```typescript
+// Use pagination for large datasets
+const { threads, hasMore } = await threadClient.listThreads(request, {
+  limit: 20,
+  offset: page * 20,
+});
+
+// Use search for filtering
+const results = await threadClient.listThreads(request, {
+  search: 'customer issue',
+});
+```
+
+## Migration Guide
+
+Migrating from the monolithic version? See our [migration guide](./guides/migration.md).
 
 ## Next Steps
 
-- [API Reference](./api) - Complete API documentation
-- [React Hooks](./react-hooks) - Detailed guide on React integration
-- [Adapters](./adapters) - Database adapter configuration
-- [Examples](./examples) - Real-world implementation examples
+- Choose a [database adapter](../threads-drizzle/index.md)
+- Explore [React integration](./react-hooks.md)
+- Read the [API documentation](./api.md)
+- See [example implementations](./examples.md)

@@ -5,8 +5,9 @@
     "packages/typescript/*"
   ],
   "scripts": {
-    "build": "bun run build:core && bun run build:ui && bun run build:langgraph",
+    "build": "bun run build:core && bun run build:drizzle && bun run build:langgraph && bun run build:ui",
     "build:core": "cd packages/typescript/threads && bun run build",
+    "build:drizzle": "cd packages/typescript/threads-drizzle && bun run build",
     "build:langgraph": "cd packages/typescript/threads-langgraph && bun run build",
     "build:ui": "cd packages/typescript/chat-ui && bun run build",
     "test": "bun test",

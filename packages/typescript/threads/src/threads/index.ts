@@ -2,9 +2,9 @@
 export * from '../types';
 export { ThreadUtilityClient, createThreadUtilityClient } from '../thread-client';
 
-// Adapter exports - using base adapters directly
-export { DrizzleAdapter } from '../adapters/drizzle-adapter';
-export type { DrizzleAdapterConfig, DrizzleDB } from '../adapters/drizzle-adapter';
+// Adapter exports are now in separate packages:
+// - @pressw/threads-drizzle for Drizzle ORM
+// - @pressw/threads-langgraph for LangGraph Cloud
 
 // Next.js route handler exports
 // TODO: Fix these imports once nextjs module is available

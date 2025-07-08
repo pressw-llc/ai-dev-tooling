@@ -16,7 +16,7 @@ async function main() {
   // Create a thread utility client
   const threadClient = new ThreadUtilityClient(
     adapter,
-    async (request: Request): Promise<UserContext> => {
+    async (_request: Request): Promise<UserContext> => {
       // Extract user context from request
       // This is a simplified example - in production you'd extract from auth headers
       return {
@@ -30,52 +30,50 @@ async function main() {
   // Example: Create a thread
   const mockRequest = new Request('https://example.com');
 
-  try {
-    // Create a new thread
-    const thread = await threadClient.createThread(mockRequest, {
-      title: 'Customer Support Chat',
-      metadata: {
-        source: 'web',
-        priority: 'high',
-        tags: ['support', 'billing'],
-      },
-    });
+  // Create a new thread
+  const thread = await threadClient.createThread(mockRequest, {
+    title: 'Customer Support Chat',
+    metadata: {
+      source: 'web',
+      priority: 'high',
+      tags: ['support', 'billing'],
+    },
+  });
 
-    console.log('Created thread:', thread);
+  // Thread created successfully
 
-    // List threads
-    const threads = await threadClient.listThreads(mockRequest, {
-      limit: 10,
-      offset: 0,
-    });
+  // List threads
+  await threadClient.listThreads(mockRequest, {
+    limit: 10,
+    offset: 0,
+  });
 
-    console.log('Found threads:', threads);
+  // Threads listed successfully
 
-    // Update thread
-    const updatedThread = await threadClient.updateThread(mockRequest, thread.id, {
-      title: 'Customer Support Chat - Resolved',
-      metadata: {
-        ...thread.metadata,
-        status: 'resolved',
-        resolvedAt: new Date().toISOString(),
-      },
-    });
+  // Update thread
+  await threadClient.updateThread(mockRequest, thread.id, {
+    title: 'Customer Support Chat - Resolved',
+    metadata: {
+      ...thread.metadata,
+      status: 'resolved',
+      resolvedAt: new Date().toISOString(),
+    },
+  });
 
-    console.log('Updated thread:', updatedThread);
+  // Thread updated successfully
 
-    // Get specific thread
-    const fetchedThread = await threadClient.getThread(mockRequest, thread.id);
-    console.log('Fetched thread:', fetchedThread);
+  // Get specific thread
+  await threadClient.getThread(mockRequest, thread.id);
+  // Thread fetched successfully
 
-    // Delete thread
-    await threadClient.deleteThread(mockRequest, thread.id);
-    console.log('Thread deleted');
-  } catch (error) {
-    console.error('Error:', error);
-  }
+  // Delete thread
+  await threadClient.deleteThread(mockRequest, thread.id);
+  // Thread deleted successfully
 }
 
 // Run the example
 if (require.main === module) {
-  main().catch(console.error);
+  main().catch((_error) => {
+    process.exit(1);
+  });
 }

@@ -14,15 +14,8 @@ import {
   or,
   SQL,
 } from 'drizzle-orm';
-import { BaseAdapter } from './base-adapter';
-import type {
-  AdapterConfig,
-  Where,
-  CleanedWhere,
-  SortBy,
-  DatabaseProvider,
-  ChatCoreAdapter,
-} from './types';
+import { BaseAdapter } from '@pressw/threads';
+import type { AdapterConfig, Where, CleanedWhere, SortBy, DatabaseProvider } from '@pressw/threads';
 
 export interface DrizzleAdapterConfig extends AdapterConfig {
   provider: DatabaseProvider;
@@ -132,7 +125,7 @@ export class DrizzleAdapter extends BaseAdapter {
       const actualFieldName =
         fieldMapping[chatCoreField as keyof typeof fieldMapping] || chatCoreField;
 
-      if (!tableSchema[actualFieldName]) {
+      if (!(tableSchema as Record<string, unknown>)[actualFieldName]) {
         throw new Error(
           `Required field "${actualFieldName}" not found in table "${tableName}". ` +
             `ChatCore requires this field for model "${model}". ` +
@@ -169,7 +162,8 @@ export class DrizzleAdapter extends BaseAdapter {
 
   private getModelFieldName(model: string, field: string): string {
     const modelFields = this.drizzleConfig.fields?.[model as keyof DrizzleAdapterConfig['fields']];
-    return (modelFields as Record<string, string>)?.[field] || field;
+    if (!modelFields) return field;
+    return (modelFields as Record<string, string>)[field] || field;
   }
 
   private buildWhereClause(where: CleanedWhere[], model: string): SQL<unknown>[] {
@@ -179,7 +173,7 @@ export class DrizzleAdapter extends BaseAdapter {
 
     if (where.length === 1) {
       const w = where[0];
-      return [this.buildSingleCondition(w, table, model)];
+      return [this.buildSingleCondition(w, table as Record<string, unknown>, model)];
     }
 
     const andGroup = where.filter((w) => w.connector === 'AND');
@@ -188,11 +182,23 @@ export class DrizzleAdapter extends BaseAdapter {
     const clauses: SQL<unknown>[] = [];
 
     if (andGroup.length) {
-      clauses.push(and(...andGroup.map((w) => this.buildSingleCondition(w, table, model)))!);
+      clauses.push(
+        and(
+          ...andGroup.map((w) =>
+            this.buildSingleCondition(w, table as Record<string, unknown>, model),
+          ),
+        )!,
+      );
     }
 
     if (orGroup.length) {
-      clauses.push(or(...orGroup.map((w) => this.buildSingleCondition(w, table, model)))!);
+      clauses.push(
+        or(
+          ...orGroup.map((w) =>
+            this.buildSingleCondition(w, table as Record<string, unknown>, model),
+          ),
+        )!,
+      );
     }
 
     return clauses;
@@ -212,30 +218,30 @@ export class DrizzleAdapter extends BaseAdapter {
 
     switch (where.operator) {
       case 'eq':
-        return eq(field, where.value);
+        return eq(field as any, where.value);
       case 'ne':
-        return ne(field, where.value);
+        return ne(field as any, where.value);
       case 'gt':
-        return gt(field, where.value);
+        return gt(field as any, where.value);
       case 'gte':
-        return gte(field, where.value);
+        return gte(field as any, where.value);
       case 'lt':
-        return lt(field, where.value);
+        return lt(field as any, where.value);
       case 'lte':
-        return lte(field, where.value);
+        return lte(field as any, where.value);
       case 'in':
         if (!Array.isArray(where.value)) {
           throw new Error("Value must be an array for 'in' operator");
         }
-        return inArray(field, where.value);
+        return inArray(field as any, where.value);
       case 'contains':
-        return like(field, `%${where.value}%`);
+        return like(field as any, `%${where.value}%`);
       case 'starts_with':
-        return like(field, `${where.value}%`);
+        return like(field as any, `${where.value}%`);
       case 'ends_with':
-        return like(field, `%${where.value}`);
+        return like(field as any, `%${where.value}`);
       default:
-        return eq(field, where.value);
+        return eq(field as any, where.value);
     }
   }
 
@@ -340,10 +346,11 @@ export class DrizzleAdapter extends BaseAdapter {
     await builder.execute();
 
     const idField = this.getModelFieldName(model, 'id');
-    if (data[idField]) {
+    const idValue = data[idField];
+    if (idValue !== undefined && idValue !== null) {
       const found = await this.findOne({
         model,
-        where: [{ field: 'id', value: data[idField] }],
+        where: [{ field: 'id', value: idValue as string | number }],
       });
       return found as T;
     }
@@ -359,7 +366,7 @@ export class DrizzleAdapter extends BaseAdapter {
     const table = this.getSchemaTable(params.model);
     const transformedData = this.transformModelInput(params.data, params.model);
 
-    const builder = this.db.insert(table).values(transformedData);
+    const builder = (this.db as any).insert(table).values(transformedData);
     return await this.withReturning(params.model, builder, transformedData);
   }
 
@@ -374,7 +381,7 @@ export class DrizzleAdapter extends BaseAdapter {
       params.model,
     );
 
-    const result = await this.db
+    const result = await (this.db as any)
       .select()
       .from(table)
       .where(...whereClause)
@@ -404,7 +411,7 @@ export class DrizzleAdapter extends BaseAdapter {
       ? this.buildWhereClause(this.cleanModelWhereClause(params.where), params.model)
       : [];
 
-    let builder = this.db
+    let builder = (this.db as any)
       .select()
       .from(table)
       .limit(params.limit || 100)
@@ -412,7 +419,7 @@ export class DrizzleAdapter extends BaseAdapter {
 
     if (params.sortBy) {
       const sortFieldName = this.getModelFieldName(params.model, params.sortBy.field);
-      const sortField = table[sortFieldName];
+      const sortField = (table as any)[sortFieldName];
       if (sortField) {
         const sortFn = params.sortBy.direction === 'desc' ? desc : asc;
         builder = builder.orderBy(sortFn(sortField));
@@ -436,7 +443,7 @@ export class DrizzleAdapter extends BaseAdapter {
       params.model,
     );
 
-    const builder = this.db
+    const builder = (this.db as any)
       .update(table)
       .set(transformedData)
       .where(...whereClause);
@@ -451,7 +458,7 @@ export class DrizzleAdapter extends BaseAdapter {
       params.model,
     );
 
-    await this.db.delete(table).where(...whereClause);
+    await (this.db as any).delete(table).where(...whereClause);
   }
 
   async count(params: { model: string; where?: Where[] }): Promise<number> {
@@ -460,7 +467,7 @@ export class DrizzleAdapter extends BaseAdapter {
       ? this.buildWhereClause(this.cleanModelWhereClause(params.where), params.model)
       : [];
 
-    const result = await this.db
+    const result = await (this.db as any)
       .select({ count: count() })
       .from(table)
       .where(...whereClause);
@@ -468,12 +475,11 @@ export class DrizzleAdapter extends BaseAdapter {
     return result[0].count;
   }
 
-  getSchema(model: string): unknown {
-    return this.getSchemaTable(model);
+  getSchema(model: string): Record<string, unknown> | undefined {
+    try {
+      return this.getSchemaTable(model) as Record<string, unknown>;
+    } catch {
+      return undefined;
+    }
   }
-}
-
-// Factory function for creating Drizzle adapter
-export function createDrizzleAdapter(db: DrizzleDB, config: DrizzleAdapterConfig): ChatCoreAdapter {
-  return new DrizzleAdapter(db, config);
 }

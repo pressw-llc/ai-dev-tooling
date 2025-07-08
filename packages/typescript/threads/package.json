@@ -41,7 +41,6 @@
     "directory": "packages/typescript/threads"
   },
   "dependencies": {
-    "drizzle-orm": "^0.36.4",
     "zod": "^3.23.0"
   },
   "peerDependencies": {

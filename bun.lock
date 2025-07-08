@@ -59,7 +59,6 @@
       "name": "@pressw/threads",
       "version": "0.0.1",
       "dependencies": {
-        "drizzle-orm": "^0.36.4",
         "zod": "^3.23.0",
       },
       "devDependencies": {
@@ -80,6 +79,22 @@
         "@tanstack/react-query",
         "react",
       ],
+    },
+    "packages/typescript/threads-drizzle": {
+      "name": "@pressw/threads-drizzle",
+      "version": "0.0.1",
+      "dependencies": {
+        "@pressw/threads": "workspace:*",
+        "drizzle-orm": "^0.36.4",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "^5.4.5",
+        "vitest": "^3.2.4",
+      },
+      "peerDependencies": {
+        "drizzle-orm": "^0.36.0",
+      },
     },
     "packages/typescript/threads-langgraph": {
       "name": "@pressw/threads-langgraph",
@@ -243,6 +258,8 @@
     "@pressw/chat-ui": ["@pressw/chat-ui@workspace:packages/typescript/chat-ui"],
 
     "@pressw/threads": ["@pressw/threads@workspace:packages/typescript/threads"],
+
+    "@pressw/threads-drizzle": ["@pressw/threads-drizzle@workspace:packages/typescript/threads-drizzle"],
 
     "@pressw/threads-langgraph": ["@pressw/threads-langgraph@workspace:packages/typescript/threads-langgraph"],
 
@@ -708,6 +725,8 @@
 
     "@pressw/threads/@types/bun": ["@types/bun@1.2.18", "", { "dependencies": { "bun-types": "1.2.18" } }, "sha512-Xf6RaWVheyemaThV0kUfaAUvCNokFr+bH8Jxp+tTZfx7dAPA8z9ePnP9S9+Vspzuxxx9JRAXhnyccRj3GyCMdQ=="],
 
+    "@pressw/threads-drizzle/@types/bun": ["@types/bun@1.2.18", "", { "dependencies": { "bun-types": "1.2.18" } }, "sha512-Xf6RaWVheyemaThV0kUfaAUvCNokFr+bH8Jxp+tTZfx7dAPA8z9ePnP9S9+Vspzuxxx9JRAXhnyccRj3GyCMdQ=="],
+
     "@pressw/threads-langgraph/@types/bun": ["@types/bun@1.2.18", "", { "dependencies": { "bun-types": "1.2.18" } }, "sha512-Xf6RaWVheyemaThV0kUfaAUvCNokFr+bH8Jxp+tTZfx7dAPA8z9ePnP9S9+Vspzuxxx9JRAXhnyccRj3GyCMdQ=="],
 
     "@typescript-eslint/typescript-estree/minimatch": ["minimatch@9.0.5", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow=="],
@@ -729,6 +748,8 @@
     "@pressw/chat-nextjs/@types/bun/bun-types": ["bun-types@1.2.18", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-04+Eha5NP7Z0A9YgDAzMk5PHR16ZuLVa83b26kH5+cp1qZW4F6FmAURngE7INf4tKOvCE69vYvDEwoNl1tGiWw=="],
 
     "@pressw/chat-ui/@types/bun/bun-types": ["bun-types@1.2.18", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-04+Eha5NP7Z0A9YgDAzMk5PHR16ZuLVa83b26kH5+cp1qZW4F6FmAURngE7INf4tKOvCE69vYvDEwoNl1tGiWw=="],
+
+    "@pressw/threads-drizzle/@types/bun/bun-types": ["bun-types@1.2.18", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-04+Eha5NP7Z0A9YgDAzMk5PHR16ZuLVa83b26kH5+cp1qZW4F6FmAURngE7INf4tKOvCE69vYvDEwoNl1tGiWw=="],
 
     "@pressw/threads-langgraph/@types/bun/bun-types": ["bun-types@1.2.18", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-04+Eha5NP7Z0A9YgDAzMk5PHR16ZuLVa83b26kH5+cp1qZW4F6FmAURngE7INf4tKOvCE69vYvDEwoNl1tGiWw=="],
 

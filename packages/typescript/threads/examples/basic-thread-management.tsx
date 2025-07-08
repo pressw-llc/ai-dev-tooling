@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   ThreadsProvider,
-  createDrizzleAdapter,
   useThreads,
   useCreateThread,
   useUpdateThread,
   useDeleteThread,
   useThread,
 } from '@pressw/threads';
+import { createDrizzleAdapter } from '@pressw/threads-drizzle';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -17,7 +17,7 @@ const setupThreads = () => {
   const sql = postgres(process.env.DATABASE_URL!);
   const db = drizzle(sql);
 
-  // 2. Create the adapter
+  // 2. Create the adapter using the separate package
   const adapter = createDrizzleAdapter(db, 'pg');
 
   // 3. Define how to get user context from requests
@@ -71,7 +71,7 @@ function ThreadManager() {
 
   const handleCreateThread = async () => {
     try {
-      const newThread = await createThread.mutateAsync({
+      await createThread.mutateAsync({
         title: 'New Conversation',
         metadata: {
           type: 'support',
@@ -79,7 +79,7 @@ function ThreadManager() {
           category: 'technical',
         },
       });
-      console.log('Created thread:', newThread);
+      // Thread created successfully
     } catch (error) {
       console.error('Failed to create thread:', error);
     }
@@ -161,7 +161,7 @@ function ThreadItem({
 }
 
 // Example: Thread detail view
-function ThreadDetailView({ threadId }: { threadId: string }) {
+export function ThreadDetailView({ threadId }: { threadId: string }) {
   const { data: thread, isLoading } = useThread(threadId);
   const updateThread = useUpdateThread();
 
