@@ -22,7 +22,7 @@ function createThreadRouteHandlers(config: ThreadRouteConfig): {
 #### Parameters
 
 - **config** (`ThreadRouteConfig`) - Configuration object containing:
-  - `adapter` (`ChatCoreAdapter`) - Database adapter instance
+  - `adapter` (`ThreadsAdapter`) - Database adapter instance
   - `getUserContext` (`GetUserContextFn`) - Function to extract user context from request
 
 #### Returns
@@ -272,7 +272,7 @@ constructor(config: ThreadServerClientConfig)
 **Parameters:**
 
 - **config** (`ThreadServerClientConfig`) - Configuration object containing:
-  - `adapter` (`ChatCoreAdapter`) - Database adapter instance
+  - `adapter` (`ThreadsAdapter`) - Database adapter instance
   - `userContext` (`UserContext`) - User context for authentication and tenant isolation
 
 #### Methods
@@ -382,18 +382,18 @@ Configuration object for route handlers.
 
 ```typescript
 interface ThreadRouteConfig {
-  adapter: ChatCoreAdapter;
+  adapter: ThreadsAdapter;
   getUserContext: GetUserContextFn;
 }
 ```
 
 **Properties:**
 
-- **adapter** (`ChatCoreAdapter`) - Database adapter instance from `@pressw/chat-core`
+- **adapter** (`ThreadsAdapter`) - Database adapter instance from `@pressw/threads`
 - **getUserContext** (`GetUserContextFn`) - Function that extracts user context from requests
 
 :::note
-`ThreadRouteConfig` is defined in `@pressw/chat-nextjs`, not imported from `@pressw/chat-core`.
+`ThreadRouteConfig` is defined in `@pressw/chat-nextjs`, not imported from `@pressw/threads`.
 :::
 
 #### GetUserContextFn
@@ -429,7 +429,7 @@ Should throw an error if the user is not authenticated or authorization fails.
 ```typescript
 import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
-import type { GetUserContextFn } from '@pressw/chat-core';
+import type { GetUserContextFn } from '@pressw/threads';
 
 export const getUserContext: GetUserContextFn = async (request: NextRequest) => {
   const authHeader = request.headers.get('authorization');
@@ -460,14 +460,14 @@ Configuration object for Server Component client.
 
 ```typescript
 interface ThreadServerClientConfig {
-  adapter: ChatCoreAdapter;
+  adapter: ThreadsAdapter;
   userContext: UserContext;
 }
 ```
 
 **Properties:**
 
-- **adapter** (`ChatCoreAdapter`) - Database adapter instance
+- **adapter** (`ThreadsAdapter`) - Database adapter instance
 - **userContext** (`UserContext`) - Pre-authenticated user context
 
 ## Error Handling

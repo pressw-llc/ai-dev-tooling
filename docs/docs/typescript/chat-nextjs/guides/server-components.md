@@ -83,7 +83,7 @@ Server Components require a different authentication approach since they don't h
 // lib/auth-server.ts
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
-import type { UserContext } from '@pressw/chat-core';
+import type { UserContext } from '@pressw/threads';
 
 export async function getCurrentUser(): Promise<UserContext> {
   const cookieStore = cookies();
@@ -113,7 +113,7 @@ export async function getCurrentUser(): Promise<UserContext> {
 // lib/auth-server.ts
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/config';
-import type { UserContext } from '@pressw/chat-core';
+import type { UserContext } from '@pressw/threads';
 
 export async function getCurrentUser(): Promise<UserContext> {
   const session = await getServerSession(authOptions);
@@ -136,7 +136,7 @@ export async function getCurrentUser(): Promise<UserContext> {
 // lib/auth-server.ts
 import { headers } from 'next/headers';
 import { verify } from 'jsonwebtoken';
-import type { UserContext } from '@pressw/chat-core';
+import type { UserContext } from '@pressw/threads';
 
 export async function getCurrentUserFromHeaders(): Promise<UserContext> {
   const headersList = headers();
@@ -387,8 +387,8 @@ export default async function HybridThreadsPage() {
 'use client';
 
 import { useState } from 'react';
-import { useThreads, useCreateThread } from '@pressw/chat-core/react';
-import type { ThreadsResponse, UserContext } from '@pressw/chat-core';
+import { useThreads, useCreateThread } from '@pressw/threads/react';
+import type { ThreadsResponse, UserContext } from '@pressw/threads';
 
 interface ThreadListClientProps {
   initialData: ThreadsResponse;
@@ -717,7 +717,7 @@ Use React's cache function for deduplication:
 import { cache } from 'react';
 import { createThreadServerClient } from '@pressw/chat-nextjs/server';
 import { adapter } from '@/lib/adapter';
-import type { UserContext } from '@pressw/chat-core';
+import type { UserContext } from '@pressw/threads';
 
 export const getThreadsForUser = cache(async (userContext: UserContext) => {
   const client = createThreadServerClient({

@@ -1,0 +1,56 @@
+{
+  "name": "@pressw/threads-drizzle",
+  "version": "0.0.1",
+  "description": "Drizzle ORM adapter for PressW thread management",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun build src/index.ts --outfile dist/index.mjs --format esm && bun build src/index.ts --outfile dist/index.cjs --format cjs && tsc --emitDeclarationOnly",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "threads",
+    "drizzle",
+    "orm",
+    "database",
+    "thread-management",
+    "sdk",
+    "pressw"
+  ],
+  "author": "PressW Team <sdk@pressw.ai>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pressw/ai-dev-tooling.git",
+    "directory": "packages/typescript/threads-drizzle"
+  },
+  "dependencies": {
+    "@pressw/threads": "workspace:*",
+    "drizzle-orm": "^0.36.4"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.36.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.4.5",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

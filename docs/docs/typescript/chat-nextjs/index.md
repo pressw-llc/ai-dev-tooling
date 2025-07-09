@@ -4,7 +4,11 @@ sidebar_position: 1
 
 # Chat Next.js
 
-The `@pressw/chat-nextjs` package provides Next.js-specific integrations for the `@pressw/chat-core` package. This separate package enables framework-agnostic use of chat-core while providing optimized Next.js functionality.
+:::caution Beta Package
+`@pressw/chat-nextjs` is in **extremely early beta**. APIs may change between versions, and you may encounter bugs. Please report any issues or feedback on our [GitHub repository](https://github.com/pressw/ai-dev-tooling/issues).
+:::
+
+The `@pressw/chat-nextjs` package provides Next.js-specific integrations for the `@pressw/threads` package. This separate package enables framework-agnostic use of the threads library while providing optimized Next.js functionality.
 
 ## Features
 
@@ -18,9 +22,9 @@ The `@pressw/chat-nextjs` package provides Next.js-specific integrations for the
 
 ## Why a Separate Package?
 
-By separating Next.js specific functionality from `@pressw/chat-core`, we enable:
+By separating Next.js specific functionality from `@pressw/threads`, we enable:
 
-- **Framework Agnostic Core**: Use chat-core with Vite, Create React App, Expo, or any React framework
+- **Framework Agnostic Core**: Use threads with Vite, Create React App, Expo, or any React framework
 - **Optional Next.js Features**: Only include Next.js dependencies when needed
 - **Smaller Bundle Size**: Core package stays lightweight without Next.js dependencies
 - **Better Tree Shaking**: Import only the functionality you need
@@ -29,24 +33,24 @@ By separating Next.js specific functionality from `@pressw/chat-core`, we enable
 ## Installation
 
 ```bash
-bun add @pressw/chat-nextjs @pressw/chat-core
+bun add @pressw/chat-nextjs @pressw/threads
 # or
-npm install @pressw/chat-nextjs @pressw/chat-core
+npm install @pressw/chat-nextjs @pressw/threads
 ```
 
 :::note
-The `@pressw/chat-nextjs` package requires `@pressw/chat-core` as a peer dependency.
+The `@pressw/chat-nextjs` package requires `@pressw/threads` as a peer dependency.
 :::
 
 ## Quick Start
 
 ### 1. Set up your database adapter
 
-First, configure your database adapter with `@pressw/chat-core`:
+First, configure your database adapter with `@pressw/threads`:
 
 ```typescript
 // lib/adapter.ts
-import { createDrizzleAdapter } from '@pressw/chat-core/adapters';
+import { createDrizzleAdapter } from '@pressw/threads/adapters';
 import { db } from './db';
 
 export const adapter = createDrizzleAdapter({ db });
@@ -91,7 +95,7 @@ export const DELETE = handlers.DELETE;
 
 ```typescript
 // components/ThreadList.tsx
-import { useThreads } from '@pressw/chat-core/react';
+import { useThreads } from '@pressw/threads/react';
 
 export function ThreadList() {
   const { data, isLoading, error } = useThreads({
@@ -157,7 +161,7 @@ All route handlers accept a configuration object:
 
 ```typescript
 interface ThreadRouteConfig {
-  adapter: ChatCoreAdapter; // Database adapter
+  adapter: ThreadsAdapter; // Database adapter
   getUserContext: GetUserContextFn; // Authentication function
 }
 ```
@@ -167,7 +171,7 @@ interface ThreadRouteConfig {
 Implement the `getUserContext` function to provide user authentication and multi-tenancy:
 
 ```typescript
-import { type GetUserContextFn } from '@pressw/chat-core';
+import { type GetUserContextFn } from '@pressw/threads';
 import { NextRequest } from 'next/server';
 
 export const getUserContext: GetUserContextFn = async (request: NextRequest) => {
@@ -286,14 +290,16 @@ Use threads in Server Components for SSR/SSG:
 
 ```typescript
 // app/threads/page.tsx
-import { headers } from 'next/headers';
-import { createThreadClient } from '@pressw/chat-nextjs/server';
+import { createThreadServerClient } from '@pressw/chat-nextjs/server';
 import { adapter } from '@/lib/adapter';
+import { getCurrentUser } from '@/lib/auth-server';
 
 export default async function ThreadsPage() {
-  const client = createThreadClient({
+  const userContext = await getCurrentUser();
+
+  const client = createThreadServerClient({
     adapter,
-    request: { headers: headers() }
+    userContext
   });
 
   const threads = await client.listThreads({
@@ -374,14 +380,14 @@ export const runtime = 'edge';
 import { createThreadRouteHandlers } from '@pressw/chat-nextjs/edge';
 ```
 
-## Migration from Chat Core
+## Migration from Threads
 
-If you're currently using Next.js route handlers from `@pressw/chat-core`, here's how to migrate:
+If you're currently using Next.js route handlers from `@pressw/threads`, here's how to migrate:
 
-### Before (chat-core)
+### Before (threads)
 
 ```typescript
-import { createThreadRouteHandlers } from '@pressw/chat-core/nextjs';
+import { createThreadRouteHandlers } from '@pressw/threads/nextjs';
 ```
 
 ### After (chat-nextjs)
@@ -394,7 +400,7 @@ The API remains the same, but you'll need to:
 
 1. Install `@pressw/chat-nextjs`
 2. Update your imports
-3. Ensure `@pressw/chat-core` is installed as a peer dependency
+3. Ensure `@pressw/threads` is installed as a peer dependency
 
 ## Best Practices
 
@@ -421,7 +427,7 @@ export const threadConfig = config[process.env.NODE_ENV];
 Always use TypeScript for better developer experience:
 
 ```typescript
-import type { Thread, CreateThreadOptions } from '@pressw/chat-core';
+import type { Thread, CreateThreadOptions } from '@pressw/threads';
 import type { NextRequest } from 'next/server';
 
 export async function createThread(
@@ -474,5 +480,5 @@ export function ThreadListPage() {
 - [Authentication Guide](./guides/authentication) - Implementing authentication
 - [Server Components](./guides/server-components) - Using with Server Components
 - [Examples](./examples) - Real-world implementation examples
-- [Thread Management](../chat-core/threads) - Learn about core thread functionality
-- [Database Adapters](../chat-core/adapters/overview) - Set up database integration
+- [Thread Management](../threads/index.md) - Learn about core thread functionality
+- [Database Adapters](../threads/adapters) - Set up database integration

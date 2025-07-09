@@ -19,21 +19,64 @@ const sidebars = {
       type: 'category',
       label: 'TypeScript',
       items: [
+        'typescript/index',
+        'typescript/integration-guide',
         {
           type: 'category',
-          label: 'Chat Core',
+          label: 'Threads',
           items: [
-            'typescript/chat-core/index',
-            'typescript/chat-core/threads',
-            'typescript/chat-core/ai-chat',
+            'typescript/threads/index',
+            'typescript/threads/api',
+            'typescript/threads/react-hooks',
+            'typescript/threads/adapters',
+            'typescript/threads/examples',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Threads Drizzle',
+          items: [
+            'typescript/threads-drizzle/index',
+            'typescript/threads-drizzle/api',
+            'typescript/threads-drizzle/examples',
             {
               type: 'category',
-              label: 'Database Adapters',
+              label: 'Guides',
               items: [
-                'typescript/chat-core/adapters/overview',
-                'typescript/chat-core/adapters/drizzle',
+                'typescript/threads-drizzle/guides/advanced-queries',
+                'typescript/threads-drizzle/guides/performance',
+                'typescript/threads-drizzle/guides/field-mapping',
+                'typescript/threads-drizzle/guides/migration',
+                'typescript/threads-drizzle/guides/troubleshooting',
               ],
             },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Threads LangGraph',
+          items: [
+            'typescript/threads-langgraph/index',
+            'typescript/threads-langgraph/api',
+            'typescript/threads-langgraph/examples',
+            {
+              type: 'category',
+              label: 'Guides',
+              items: [
+                'typescript/threads-langgraph/guides/integration',
+                'typescript/threads-langgraph/guides/migration',
+              ],
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Chat UI',
+          items: [
+            'typescript/chat-ui/index',
+            'typescript/chat-ui/components',
+            'typescript/chat-ui/theming',
+            'typescript/chat-ui/examples',
           ],
         },
         {

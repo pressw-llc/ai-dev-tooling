@@ -36,7 +36,7 @@
     "directory": "packages/typescript/chat-ui"
   },
   "dependencies": {
-    "@pressw/chat-core": "workspace:*",
+    "@pressw/threads": "workspace:*",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "zod": "^3.23.0"

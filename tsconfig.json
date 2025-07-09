@@ -15,7 +15,9 @@
   },
   "include": [],
   "references": [
-    { "path": "./packages/typescript/chat-core" },
+    { "path": "./packages/typescript/threads" },
+    { "path": "./packages/typescript/threads-drizzle" },
+    { "path": "./packages/typescript/threads-langgraph" },
     { "path": "./packages/typescript/chat-ui" }
   ]
 }

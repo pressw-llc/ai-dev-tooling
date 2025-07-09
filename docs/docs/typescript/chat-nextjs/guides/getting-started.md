@@ -11,7 +11,7 @@ This guide will walk you through setting up the `@pressw/chat-nextjs` package in
 Before starting, ensure you have:
 
 - Next.js 13+ with App Router (or Pages Router with limited support)
-- A database supported by `@pressw/chat-core` adapters
+- A database supported by `@pressw/threads` adapters
 - Basic understanding of Next.js API routes and Server Components
 
 ## Installation
@@ -19,9 +19,9 @@ Before starting, ensure you have:
 Install the required packages:
 
 ```bash
-npm install @pressw/chat-nextjs @pressw/chat-core
+npm install @pressw/chat-nextjs @pressw/threads
 # or
-bun add @pressw/chat-nextjs @pressw/chat-core
+bun add @pressw/chat-nextjs @pressw/threads
 ```
 
 ## Step 1: Database Setup
@@ -90,11 +90,11 @@ CREATE INDEX threads_tenant_id_idx ON threads(tenant_id);
 
 ## Step 2: Configure Database Adapter
 
-Create a database adapter using `@pressw/chat-core`:
+Create a database adapter using `@pressw/threads`:
 
 ```typescript
 // lib/adapter.ts
-import { createDrizzleAdapter } from '@pressw/chat-core/adapters';
+import { createDrizzleAdapter } from '@pressw/threads/adapters';
 import { db } from './db';
 
 export const adapter = createDrizzleAdapter({
@@ -122,7 +122,7 @@ Create a function to extract user context from requests:
 // lib/auth.ts
 import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
-import type { GetUserContextFn, UserContext } from '@pressw/chat-core';
+import type { GetUserContextFn, UserContext } from '@pressw/threads';
 
 export const getUserContext: GetUserContextFn = async (
   request: NextRequest,
@@ -257,7 +257,7 @@ Create components that use the thread functionality:
 // components/ThreadList.tsx
 'use client';
 
-import { useThreads, useCreateThread, useDeleteThread } from '@pressw/chat-core/react';
+import { useThreads, useCreateThread, useDeleteThread } from '@pressw/threads/react';
 import { useState } from 'react';
 
 export function ThreadList() {
