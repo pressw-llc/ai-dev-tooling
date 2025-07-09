@@ -7,7 +7,7 @@ describe('DrizzleAdapter', () => {
     it('should throw error if schema not found', () => {
       const invalidDb = {} as DrizzleDB;
       const config: DrizzleAdapterConfig = {
-        provider: 'postgres',
+        provider: 'pg',
         tables: {
           user: 'users',
           thread: 'threads',
@@ -33,7 +33,7 @@ describe('DrizzleAdapter', () => {
       } as DrizzleDB;
 
       const config: DrizzleAdapterConfig = {
-        provider: 'postgres',
+        provider: 'pg',
         tables: {
           user: 'non_existent_table',
           thread: 'threads',
@@ -75,7 +75,7 @@ describe('DrizzleAdapter', () => {
       } as DrizzleDB;
 
       const config: DrizzleAdapterConfig = {
-        provider: 'postgres',
+        provider: 'pg',
         tables: {
           user: 'users',
           thread: 'threads',
@@ -117,7 +117,7 @@ describe('DrizzleAdapter', () => {
       } as DrizzleDB;
 
       const config: DrizzleAdapterConfig = {
-        provider: 'postgres',
+        provider: 'pg',
         tables: {
           user: 'users',
           thread: 'threads',
@@ -165,7 +165,7 @@ describe('DrizzleAdapter', () => {
       } as DrizzleDB;
 
       const config: DrizzleAdapterConfig = {
-        provider: 'postgres',
+        provider: 'pg',
         tables: {
           user: 'users',
           thread: 'threads',
@@ -207,7 +207,7 @@ describe('DrizzleAdapter', () => {
       } as DrizzleDB;
 
       const config: DrizzleAdapterConfig = {
-        provider: 'postgres',
+        provider: 'pg',
         tables: {
           user: 'users',
           thread: 'threads',
@@ -270,7 +270,7 @@ describe('DrizzleAdapter', () => {
 
       // Test with PostgreSQL (full support)
       const pgConfig: DrizzleAdapterConfig = {
-        provider: 'postgres',
+        provider: 'pg',
         tables: {
           user: 'users',
           thread: 'threads',

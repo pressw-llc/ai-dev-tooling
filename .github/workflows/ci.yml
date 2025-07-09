@@ -143,11 +143,11 @@ jobs:
       - name: Install dependencies
         run: bun install
       - name: Test TypeScript
-        run: bun test --coverage
-      - uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: typescript
+        run: bun test
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     flags: typescript
 
   docs-build:
     needs: detect-changes
