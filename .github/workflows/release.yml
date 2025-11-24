@@ -38,7 +38,7 @@ jobs:
     if: needs.parse-tag.outputs.package == 'pw-ai-foundation'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v1
         with:
           version: 'latest'
@@ -70,7 +70,7 @@ jobs:
     if: startsWith(needs.parse-tag.outputs.package, 'pressw-')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
@@ -117,7 +117,7 @@ jobs:
     if: always() && !contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
